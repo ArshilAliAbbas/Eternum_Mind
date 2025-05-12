@@ -5,16 +5,42 @@ import { Button } from "../ui/Button"; // Update path if needed
 
 const LandingPage = () => {
   return (
-    <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-[#0f1a2b] px-4 text-white">
-      {/* Background Stars */}
-      <div className="bg-dot-pattern pointer-events-none absolute inset-0 z-0">
-        {/* Stars */}
-        <div className="bg-stars absolute inset-0 animate-pulse opacity-50"></div>
+    <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-[#050d1d] px-4 text-white">
+      {/* Background with Scattered Golden Dots */}
+      <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+        {/* Random Scattered Golden Dots */}
+        <div className="absolute inset-0">
+          {/* Using individual dots instead of a pattern for more randomness */}
+          {Array.from({ length: 50 }).map((_, index) => {
+            const top = `${Math.random() * 100}%`;
+            const left = `${Math.random() * 100}%`;
+            const size = Math.random() * 2 + 1; // Random size between 1-3px
+            const opacity = Math.random() * 0.2 + 0.1; // Random opacity between 0.1-0.3
+            
+            return (
+              <div 
+                key={index}
+                className="absolute rounded-full bg-[#FFD700]"
+                style={{
+                  top,
+                  left,
+                  width: `${size}px`,
+                  height: `${size}px`,
+                  opacity
+                }}
+              />
+            );
+          })}
+        </div>
       </div>
       {/* Title */}
       <h1
-        className="glow-text bg-gradient-to-r from-blue-600 via-blue-600 to-blue-500 bg-clip-text text-6xl font-black tracking-tight text-transparent"
-        style={{ marginTop: "12rem" }}
+        className="glow-text bg-gradient-to-r from-blue-600 via-blue-600 to-blue-500 bg-clip-text text-6xl font-extrabold tracking-tight text-transparent"
+        style={{ 
+          marginTop: "12rem",
+          textShadow: "0 0 5px rgba(59, 130, 246, 0.5)",
+          fontWeight: 900
+        }}
       >
         Your Journey to Mental Wellbeing
       </h1>
@@ -25,16 +51,16 @@ const LandingPage = () => {
       </p>
       {/* CTA Buttons */}
       <div className="z-10 mt-8 flex flex-wrap justify-center gap-6">
-        <Button className="group relative inline-flex items-center overflow-hidden rounded-md border-2 border-blue-600 bg-blue-500 px-6 py-3 font-medium text-white">
+        <Button className="group relative inline-flex items-center overflow-hidden rounded-md border-2 border-blue-600 bg-blue-500 px-8 py-5 text-xl font-medium text-white">
           <span className="relative z-10">Start Your Journey</span>
-          <ArrowRight className="ml-3 transition-transform duration-300 group-hover:translate-x-5" />
+          <ArrowRight className="ml-3 size-6 transition-transform duration-300 group-hover:translate-x-5" />
         </Button>
         <Button
           variant="outline"
-          className="group rounded-xl border border-purple-500 px-8 py-4 text-lg text-white transition hover:bg-purple-500/10"
+          className="group rounded-xl border border-purple-500 px-10 py-5 text-xl text-white transition hover:bg-purple-500/10"
         >
           Try Demo Mode{" "}
-          <Sparkles className="ml-3 size-5 transition-transform duration-500 group-hover:rotate-[360deg]" />
+          <Sparkles className="ml-3 size-6 transition-transform duration-500 group-hover:rotate-[360deg]" />
         </Button>
       </div>
       {/* Down Arrow */}
