@@ -16,9 +16,9 @@ const LandingPage = () => {
             const left = `${Math.random() * 100}%`;
             const size = Math.random() * 2 + 1; // Random size between 1-3px
             const opacity = Math.random() * 0.2 + 0.1; // Random opacity between 0.1-0.3
-            
+
             return (
-              <div 
+              <div
                 key={index}
                 className="absolute rounded-full bg-[#FFD700]"
                 style={{
@@ -26,7 +26,7 @@ const LandingPage = () => {
                   left,
                   width: `${size}px`,
                   height: `${size}px`,
-                  opacity
+                  opacity,
                 }}
               />
             );
@@ -36,10 +36,10 @@ const LandingPage = () => {
       {/* Title */}
       <h1
         className="glow-text bg-gradient-to-r from-blue-600 via-blue-600 to-blue-500 bg-clip-text text-6xl font-extrabold tracking-tight text-transparent"
-        style={{ 
+        style={{
           marginTop: "12rem",
           textShadow: "0 0 5px rgba(59, 130, 246, 0.5)",
-          fontWeight: 900
+          fontWeight: 900,
         }}
       >
         Your Journey to Mental Wellbeing
