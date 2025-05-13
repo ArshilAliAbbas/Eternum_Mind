@@ -370,7 +370,7 @@ const LandingPage = () => {
           <div className="mb-6 flex items-center justify-center">
             <div className="flex items-center">
               <div className="mr-2 size-6 rounded-full bg-blue-600"></div>
-              <span className="text-xl font-bold">Eterum Mind</span>
+              <span className="text-xl font-bold">NeuroSphere</span>
             </div>
           </div>
           <div className="mb-6 flex flex-wrap justify-center gap-8">
@@ -391,7 +391,7 @@ const LandingPage = () => {
             </a>
           </div>
           <div className="text-sm text-gray-500">
-            © 2025 Eterum Mind. All rights reserved.
+            © 2025 NeuroSphere. All rights reserved.
           </div>
         </div>
       </footer>

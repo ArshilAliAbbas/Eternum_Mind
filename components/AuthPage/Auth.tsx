@@ -20,16 +20,15 @@ const AnimatedLogo = () => {
   }, []);
   
   return (
-    <div className="relative flex items-center justify-center h-16 w-16">
+    <div className="relative flex size-16 items-center justify-center">
       {/* Main gradient circle */}
-      <div className="absolute h-16 w-16 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-blue-500"></div>
-      
+      <div className="absolute size-16 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-blue-500"></div>
       {/* Ripple effects */}
       {isRippling && (
         <>
-          <div className="absolute h-16 w-16 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-blue-500 opacity-75 animate-ripple"></div>
-          <div className="absolute h-16 w-16 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-blue-500 opacity-50 animate-ripple-delay"></div>
-          <div className="absolute h-16 w-16 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-blue-500 opacity-25 animate-ripple-delay-2"></div>
+          <div className="animate-ripple absolute size-16 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-blue-500 opacity-75"></div>
+          <div className="animate-ripple-delay absolute size-16 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-blue-500 opacity-50"></div>
+          <div className="animate-ripple-delay-2 absolute size-16 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-blue-500 opacity-25"></div>
         </>
       )}
     </div>
@@ -40,14 +39,14 @@ const AnimatedLogo = () => {
 const InputField = ({ icon, type, placeholder }:{icon:any,type:any,placeholder:any}) => {
   return (
     <div className="relative">
-      <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
+      <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
         {icon}
       </div>
       <input 
         type={type} 
-        className="w-full py-3 pl-10 pr-4 bg-gray-800 border border-gray-700 rounded-md 
-                  focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent
-                  text-gray-200 placeholder-gray-500 transition-all duration-300"
+        className="w-full rounded-md border border-gray-700 bg-gray-800 py-3 pl-10 pr-4 
+                  text-gray-200 transition-all duration-300 placeholder:text-gray-500
+                  focus:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-500"
         placeholder={placeholder}
       />
     </div>
@@ -66,23 +65,22 @@ export default function LoginPage() {
       {/* Main content container */}
       <div className="w-full max-w-md">
         {/* Logo and brand section */}
-        <div className="flex flex-col items-center justify-center mb-6">
+        <div className="mb-6 flex flex-col items-center justify-center">
           <div className="flex items-center justify-center space-x-4">
             <AnimatedLogo />
             <h1 className="text-3xl font-bold text-white">Eternum Mind</h1>
           </div>
-          <p className="mt-2 text-gray-400 text-center">
+          <p className="mt-2 text-center text-gray-400">
             Unlock the full potential of your mental well-being journey
           </p>
         </div>
-        
         {/* Login form card */}
-        <div className="bg-gray-800 rounded-lg shadow-xl p-8 mb-6">
+        <div className="mb-6 rounded-lg bg-gray-800 p-8 shadow-xl">
           {/* Icon and welcome text */}
-          <div className="flex flex-col items-center justify-center mb-6">
-            <div className="h-12 w-12 bg-purple-600 rounded-full flex items-center justify-center mb-4">
+          <div className="mb-6 flex flex-col items-center justify-center">
+            <div className="mb-4 flex size-12 items-center justify-center rounded-full bg-purple-600">
               <svg 
-                className="h-6 w-6 text-white" 
+                className="size-6 text-white" 
                 xmlns="http://www.w3.org/2000/svg" 
                 fill="none" 
                 viewBox="0 0 24 24" 
@@ -96,36 +94,33 @@ export default function LoginPage() {
                 />
               </svg>
             </div>
-            <h2 className="text-2xl font-bold text-white mb-1">Welcome Back</h2>
-            <p className="text-gray-400 text-center">
+            <h2 className="mb-1 text-2xl font-bold text-white">Welcome Back</h2>
+            <p className="text-center text-gray-400">
               Enter your credentials to access your account
             </p>
-            
             {/* Demo mode toggle */}
-            <div className="flex items-center mt-2">
-              <span className="text-sm text-gray-400 mr-2">Demo Mode</span>
+            <div className="mt-2 flex items-center">
+              <span className="mr-2 text-sm text-gray-400">Demo Mode</span>
               <button 
-                className={`w-10 h-6 flex items-center rounded-full p-1 
+                className={`flex h-6 w-10 items-center rounded-full p-1 
                           ${demoMode ? 'bg-purple-600' : 'bg-gray-700'} transition-colors duration-300 ease-in-out`}
                 onClick={() => setDemoMode(!demoMode)}
               >
                 <div 
-                  className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-300 ease-in-out
-                            ${demoMode ? 'translate-x-4' : 'translate-x-0'}`}
+                  className={`size-4 rounded-full bg-white shadow-md transition-transform duration-300 ease-in-out${demoMode ? 'translate-x-4' : 'translate-x-0'}`}
                 ></div>
               </button>
             </div>
           </div>
-          
           {/* Form fields */}
           <form className="space-y-6">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-400 mb-2">
+              <label htmlFor="email" className="mb-2 block text-sm font-medium text-gray-400">
                 Email
               </label>
               <InputField 
                 icon={
-                  <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <svg className="size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                     <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
                     <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
                   </svg>
@@ -134,14 +129,13 @@ export default function LoginPage() {
                 placeholder="you@example.com" 
               />
             </div>
-            
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-400 mb-2">
+              <label htmlFor="password" className="mb-2 block text-sm font-medium text-gray-400">
                 Password
               </label>
               <InputField 
                 icon={
-                  <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <svg className="size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
                   </svg>
                 } 
@@ -149,14 +143,13 @@ export default function LoginPage() {
                 placeholder="••••••••" 
               />
             </div>
-            
             {/* Sign In button with animation */}
             <button
               type="button"
-              className="w-full py-3 px-4 rounded-md text-white font-medium 
-                        bg-gradient-to-r from-purple-600 to-blue-500 hover:from-purple-700 hover:to-blue-600
-                        focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500
-                        transition-all duration-300 ease-in-out transform relative overflow-hidden"
+              className="relative w-full overflow-hidden rounded-md bg-gradient-to-r from-purple-600 
+                        to-blue-500 px-4 py-3 font-medium text-white
+                        transition-all duration-300 ease-in-out hover:from-purple-700
+                        hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
               onMouseDown={() => setIsPressed(true)}
               onMouseUp={() => setIsPressed(false)}
               onMouseLeave={() => setIsPressed(false)}
@@ -167,7 +160,7 @@ export default function LoginPage() {
               <div className="flex items-center justify-center">
                 <span>Sign In</span>
                 <svg 
-                  className="ml-2 h-5 w-5" 
+                  className="ml-2 size-5" 
                   xmlns="http://www.w3.org/2000/svg" 
                   viewBox="0 0 20 20" 
                   fill="currentColor"
@@ -182,19 +175,16 @@ export default function LoginPage() {
             </button>
           </form>
         </div>
-        
         {/* Sign up link */}
         <div className="text-center">
           <p className="text-gray-400">
             Don't have an account?{' '}
-            <a href="#" className="text-purple-400 hover:text-purple-300 font-medium transition-colors duration-300">
+            <a href="#" className="font-medium text-purple-400 transition-colors duration-300 hover:text-purple-300">
               Sign up
             </a>
           </p>
         </div>
       </div>
-      
-      {/* Custom styles for animations */}
       <style jsx global>{`
         @keyframes ripple {
           0% {
