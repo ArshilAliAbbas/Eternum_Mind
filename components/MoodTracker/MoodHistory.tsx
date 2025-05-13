@@ -151,31 +151,33 @@ const MoodHistory: React.FC = () => {
 
   // Add animation keyframes to the global style
   useEffect(() => {
-    const styleSheet = document.createElement("style");
-    styleSheet.textContent = `
-      @keyframes float {
-        0% { transform: translateY(0) translateX(0); opacity: 0; }
-        25% { opacity: 0.5; }
-        50% { transform: translateY(-20px) translateX(10px); opacity: 0.3; }
-        75% { opacity: 0.5; }
-        100% { transform: translateY(-40px) translateX(0); opacity: 0; }
-      }
-      @keyframes pulse {
-        0% { transform: scale(1); opacity: 0.8; }
-        50% { transform: scale(1.05); opacity: 1; }
-        100% { transform: scale(1); opacity: 0.8; }
-      }
-      @keyframes shine {
-        to {
-          transform: translateX(100%);
+    if (typeof document !== 'undefined') {
+      const styleSheet = document.createElement("style");
+      styleSheet.textContent = `
+        @keyframes float {
+          0% { transform: translateY(0) translateX(0); opacity: 0; }
+          25% { opacity: 0.5; }
+          50% { transform: translateY(-20px) translateX(10px); opacity: 0.3; }
+          75% { opacity: 0.5; }
+          100% { transform: translateY(-40px) translateX(0); opacity: 0; }
         }
-      }
-    `;
-    document.head.appendChild(styleSheet);
+        @keyframes pulse {
+          0% { transform: scale(1); opacity: 0.8; }
+          50% { transform: scale(1.05); opacity: 1; }
+          100% { transform: scale(1); opacity: 0.8; }
+        }
+        @keyframes shine {
+          to {
+            transform: translateX(100%);
+          }
+        }
+      `;
+      document.head.appendChild(styleSheet);
 
-    return () => {
-      document.head.removeChild(styleSheet);
-    };
+      return () => {
+        document.head.removeChild(styleSheet);
+      };
+    }
   }, []);
 
   return (
@@ -334,7 +336,7 @@ const MoodHistory: React.FC = () => {
             >
               {/* Glowing accent based on mood */}
               <div
-                className={`absolute -right-4 -top-4 size-24 rounded-full bg-gradient-to-br ${getMoodColor(entry.moodType)} opacity-20 blur-xl transition-opacity group-hover:opacity-30`}
+                className={`absolute -right-4 -top-4 size-24 rounded-full bg-gradient-to-br ${getMoodColor(entry.moodType || null)} opacity-20 blur-xl transition-opacity group-hover:opacity-30`}
               ></div>
               {/* Decorative corner accents */}
               <div className="absolute left-0 top-0 h-6 w-px bg-gradient-to-b from-indigo-500/50 to-transparent"></div>
@@ -345,7 +347,7 @@ const MoodHistory: React.FC = () => {
                 <div>
                   <div className="mb-1 flex items-center gap-2">
                     <div className="flex size-8 items-center justify-center rounded-full bg-[#1e293b]">
-                      {getMoodIcon(entry.moodType)}
+                      {getMoodIcon(entry.moodType || null)}
                     </div>
                     <div>
                       <h3 className="font-medium capitalize">
@@ -391,7 +393,7 @@ const MoodHistory: React.FC = () => {
                   </div>
                 </div>
               </div>
-              {entry.factors.length > 0 && (
+              {entry.factors && entry.factors.length > 0 && (
                 <div className="mt-4">
                   <div className="text-xs text-gray-400">
                     Contributing factors:
@@ -431,8 +433,8 @@ const MoodHistory: React.FC = () => {
           {/* Calendar grid - would need proper calendar logic in a real app */}
           {Array.from({ length: 35 }).map((_, index) => {
             // Find a matching entry for this "day" (simplified for demo)
-            const entry = moodHistory[index % moodHistory.length];
-            const hasEntry = index < 31; // Simulate some days having entries
+            const entry = moodHistory.length > 0 ? moodHistory[index % moodHistory.length] : null;
+            const hasEntry = index < 31 && entry !== null; // Simulate some days having entries
 
             return (
               <div
@@ -452,7 +454,7 @@ const MoodHistory: React.FC = () => {
                     {/* Mood indicator */}
                     <div className="absolute inset-0 flex items-center justify-center">
                       <div
-                        className={`size-10 rounded-full bg-gradient-to-br ${getMoodColor(entry.moodType)} opacity-20`}
+                        className={`size-10 rounded-full bg-gradient-to-br ${entry && getMoodColor(entry.moodType)} opacity-20`}
                       ></div>
                     </div>
                     {/* Mood and energy bars */}
@@ -460,13 +462,13 @@ const MoodHistory: React.FC = () => {
                       <div className="mb-1 h-1 w-full rounded-full bg-[#0c1222]">
                         <div
                           className="h-1 rounded-full bg-indigo-500"
-                          style={{ width: `${(entry.mood / 5) * 100}%` }}
+                          style={{ width: entry ? `${(entry.mood / 5) * 100}%` : '0%' }}
                         ></div>
                       </div>
                       <div className="h-1 w-full rounded-full bg-[#0c1222]">
                         <div
                           className="h-1 rounded-full bg-cyan-400"
-                          style={{ width: `${(entry.energy / 5) * 100}%` }}
+                          style={{ width: entry ? `${(entry.energy / 5) * 100}%` : '0%' }}
                         ></div>
                       </div>
                     </div>
