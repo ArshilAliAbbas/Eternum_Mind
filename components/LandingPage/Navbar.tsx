@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import React, { useState, useEffect } from "react";
 
 const Navbar: React.FC = () => {
@@ -27,7 +28,7 @@ const Navbar: React.FC = () => {
             {/* Logo Circle */}
             <div className="absolute inset-0 rounded-full bg-[#7256ff]/90"></div>
           </div>
-          <span className="font-sm text-xl text-white">NeuroSphere</span>
+          <span className="font-sm text-xl text-white">Eterum Mind</span>
         </div>
         {/* Navigation Links - Mobile Hamburger Menu - Only shows on small screens */}
         <div className="md:hidden">
@@ -50,35 +51,35 @@ const Navbar: React.FC = () => {
         </div>
         {/* Desktop Navigation */}
         <div className="hidden items-center space-x-10 md:flex">
-          <a
+          <Link
             href="#login"
             className="text-white transition-colors hover:text-gray-300"
           >
             Log in
-          </a>
-          <a
+          </Link>
+          <Link
             href="#get-started"
             className="rounded-lg bg-[#7256ff] px-6 py-3 font-medium text-white shadow-md shadow-[#7256ff]/30 transition-all duration-300 hover:bg-[#8165ff] hover:shadow-lg hover:shadow-[#7256ff]/40"
           >
             Get Started
-          </a>
+          </Link>
         </div>
       </div>
       {/* Mobile Navigation Menu - Hidden by default */}
       <div className="absolute inset-x-0 top-full hidden bg-[#0a0b13]/95 px-6 py-4 shadow-lg md:hidden">
         <div className="flex flex-col space-y-4">
-          <a
+          <Link
             href="#login"
             className="py-2 text-white transition-colors hover:text-gray-300"
           >
             Log in
-          </a>
-          <a
+          </Link>
+          <Link
             href="#get-started"
             className="rounded-lg bg-[#7256ff] px-6 py-3 text-center font-medium text-white shadow-md shadow-[#7256ff]/30 transition-all duration-300 hover:bg-[#8165ff] hover:shadow-lg hover:shadow-[#7256ff]/40"
           >
             Get Started
-          </a>
+          </Link>
         </div>
       </div>
     </nav>
