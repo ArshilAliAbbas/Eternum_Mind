@@ -48,7 +48,7 @@ return {
   const filteredEntries = entries.filter(entry => 
     entry.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
     entry.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (entry.tags && entry.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase())))
+    (entry.tags && entry.tags.some((tag: string) => tag.toLowerCase().includes(searchTerm.toLowerCase())))
   );
 
   const formatDate = (dateString: string) => {
@@ -155,7 +155,7 @@ return content.substring(0, maxLength) + '...';
                 <p className="mb-4 grow text-sm text-gray-400">{getExcerpt(entry.content)}</p>
                 {entry.tags && entry.tags.length > 0 && (
                   <div className="mb-2 flex flex-wrap gap-1">
-                    {entry.tags.map((tag, index) => (
+                    {entry.tags.map((tag: string, index: number) => (
                       <span 
                         key={index} 
                         className="rounded-full bg-[#1e293b] px-2 py-0.5 text-xs text-gray-300"
