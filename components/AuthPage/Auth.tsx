@@ -18,20 +18,20 @@ const AnimatedLogo = ({ size = '16' }: { size?: string }) => {
   }, []);
 
   return (
-    <div className={`size- relative flex items-center justify-center${size}`} aria-hidden="true">
+    <div className={`relative flex items-center justify-center size-${size}`} aria-hidden="true">
       <div
-        className={`size- absolute${size} rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-blue-500`}
+        className={`absolute size-${size} rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-blue-500`}
       ></div>
       {isRippling && (
         <>
           <div
-            className={`animate-ripple size- absolute${size} rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-blue-500 opacity-75`}
+            className={`animate-ripple absolute size-${size} rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-blue-500 opacity-75`}
           ></div>
           <div
-            className={`animate-ripple-delay size- absolute${size} rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-blue-500 opacity-50`}
+            className={`animate-ripple-delay absolute size-${size} rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-blue-500 opacity-50`}
           ></div>
           <div
-            className={`animate-ripple-delay-2 size- absolute${size} rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-blue-500 opacity-25`}
+            className={`animate-ripple-delay-2 absolute size-${size} rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-blue-500 opacity-25`}
           ></div>
         </>
       )}
@@ -88,7 +88,7 @@ export default function LoginPage() {
         </div>
         <div className="mb-6 rounded-lg bg-gray-800 p-8 shadow-xl">
           <div className="mb-6 flex flex-col items-center justify-center">
-            <div className="mb-4 flex size-12 items-center justify-center rounded-full bg-purple-600">
+            <div className="mb-4 flex items-center justify-center rounded-full bg-purple-600 size-12">
               <svg
                 className="size-6 text-white"
                 xmlns="http://www.w3.org/2000/svg"

@@ -52,13 +52,13 @@ const Navbar: React.FC = () => {
         {/* Desktop Navigation */}
         <div className="hidden items-center space-x-10 md:flex">
           <Link
-            href="#login"
+            href="/login"
             className="text-white transition-colors hover:text-gray-300"
           >
             Log in
           </Link>
           <Link
-            href="#get-started"
+            href="/login"
             className="rounded-lg bg-[#7256ff] px-6 py-3 font-medium text-white shadow-md shadow-[#7256ff]/30 transition-all duration-300 hover:bg-[#8165ff] hover:shadow-lg hover:shadow-[#7256ff]/40"
           >
             Get Started
@@ -69,13 +69,13 @@ const Navbar: React.FC = () => {
       <div className="absolute inset-x-0 top-full hidden bg-[#0a0b13]/95 px-6 py-4 shadow-lg md:hidden">
         <div className="flex flex-col space-y-4">
           <Link
-            href="#login"
+            href="/login"
             className="py-2 text-white transition-colors hover:text-gray-300"
           >
             Log in
           </Link>
           <Link
-            href="#get-started"
+            href="/login"
             className="rounded-lg bg-[#7256ff] px-6 py-3 text-center font-medium text-white shadow-md shadow-[#7256ff]/30 transition-all duration-300 hover:bg-[#8165ff] hover:shadow-lg hover:shadow-[#7256ff]/40"
           >
             Get Started
