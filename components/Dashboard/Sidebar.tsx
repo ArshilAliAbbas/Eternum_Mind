@@ -16,26 +16,22 @@ const Sidebar: React.FC = () => {
   
   // Create a context value to share the expanded state with the layout
   useEffect(() => {
-    // Add a small delay to prevent accidental triggers during quick mouse movements
-    const timer = setTimeout(() => {
-      // Add a class to the body when sidebar is expanded
-      if (expanded) {
-        document.body.classList.add('sidebar-expanded');
-      } else {
-        document.body.classList.remove('sidebar-expanded');
-      }
-    }, 100); // 100ms delay for stability
+    // Immediately update the body class without delay to remove lag
+    if (expanded) {
+      document.body.classList.add('sidebar-expanded');
+    } else {
+      document.body.classList.remove('sidebar-expanded');
+    }
     
-    // Cleanup on unmount and before next effect run
+    // Cleanup on unmount
     return () => {
-      clearTimeout(timer);
-      // No need to remove the class here as it will be handled by the next effect run
+      document.body.classList.remove('sidebar-expanded');
     };
   }, [expanded]);
   
   return (
     <aside 
-      className={`fixed left-0 top-0 z-50 flex h-full flex-col border-r border-gray-800 bg-[#0f1729] py-6 shadow-lg transition-all duration-300 ease-out ${expanded ? 'w-[220px] shadow-indigo-900/20' : 'w-[80px]'}`}
+      className={`fixed left-0 top-0 z-50 flex h-full flex-col border-r border-gray-800 bg-[#0f1729] py-6 shadow-lg transition-all duration-150 ease-out ${expanded ? 'w-[220px] shadow-indigo-900/20' : 'w-[80px]'}`}
       onMouseEnter={() => setExpanded(true)}
       onMouseLeave={() => setExpanded(false)}
     >

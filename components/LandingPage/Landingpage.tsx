@@ -111,11 +111,11 @@ const LandingPage = () => {
         ].map(({ icon: Icon, title, desc, color }, index) => (
           <div
             key={index}
-            className="group h-[350px] w-full rounded-xl border border-blue-500/20 bg-[#151f38] p-8 text-center shadow-lg backdrop-blur-sm transition-all hover:shadow-blue-500/30 md:h-[350px]"
+            className="group h-[350px] w-full rounded-xl border border-blue-500/20 bg-[#151f38] p-8 text-center shadow-lg backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:shadow-blue-500/30 md:h-[350px]"
           >
             {/* Icon with Circular Background */}
             <div
-              className={`absolute left-4 top-4 flex size-16 items-center justify-center rounded-full ${color} transition-all duration-300 group-hover:translate-y-3`}
+              className={`absolute left-4 top-4 flex size-16 items-center justify-center rounded-full ${color} transition-all duration-300`}
             >
               <Icon className="size-8 text-white" />
             </div>
@@ -142,7 +142,7 @@ const LandingPage = () => {
           {/* Technology Features */}
           <div className="mt-16 grid grid-cols-1 gap-8 md:grid-cols-3">
             {/* Neural Analysis */}
-            <div className="hover-float flex h-[280px] flex-col rounded-xl border-2 border-purple-500/30 bg-[#192340]/90 p-8 backdrop-blur-md transition-all duration-500 hover:shadow-purple-500/30 md:h-[300px]">
+            <div className="flex h-[280px] flex-col rounded-xl border-2 border-purple-500/30 bg-[#192340]/90 p-8 backdrop-blur-md transition-all duration-300 hover:scale-105 hover:shadow-purple-500/30 md:h-[300px]">
               <div className="mb-6 flex size-16 items-center justify-center rounded-full bg-purple-600">
                 <Brain className="size-8 text-white" />
               </div>
@@ -153,7 +153,7 @@ const LandingPage = () => {
               </p>
             </div>
             {/* Web3 Security */}
-            <div className="hover-float flex h-[280px] flex-col rounded-xl border-2 border-blue-500/30 bg-[#192340]/90 p-8 backdrop-blur-md transition-all duration-500 hover:shadow-blue-500/30 md:h-[300px]">
+            <div className="flex h-[280px] flex-col rounded-xl border-2 border-blue-500/30 bg-[#192340]/90 p-8 backdrop-blur-md transition-all duration-300 hover:scale-105 hover:shadow-blue-500/30 md:h-[300px]">
               <div className="mb-6 flex size-16 items-center justify-center rounded-full bg-blue-600">
                 <Lock className="size-8 text-white" />
               </div>
@@ -164,7 +164,7 @@ const LandingPage = () => {
               </p>
             </div>
             {/* Memory Crystals */}
-            <div className="hover-float flex h-[280px] flex-col rounded-xl border-2 border-purple-500/30 bg-[#192340]/90 p-8 backdrop-blur-md transition-all duration-500 hover:shadow-purple-500/30 md:h-[300px]">
+            <div className="flex h-[280px] flex-col rounded-xl border-2 border-purple-500/30 bg-[#192340]/90 p-8 backdrop-blur-md transition-all duration-300 hover:scale-105 hover:shadow-purple-500/30 md:h-[300px]">
               <div className="mb-6 flex size-16 items-center justify-center rounded-full bg-purple-600">
                 <Database className="size-8 text-white" />
               </div>
@@ -203,7 +203,7 @@ const LandingPage = () => {
           {/* Testimonials */}
           <div className="mt-16 grid grid-cols-1 gap-8 md:grid-cols-3">
             {/* Testimonial 1 */}
-            <div className="hover-float rounded-xl border border-blue-500/20 bg-[#101830]/70 p-8 backdrop-blur-lg transition-all duration-500 hover:shadow-blue-500/20">
+            <div className="rounded-xl border border-blue-500/20 bg-[#101830]/70 p-8 backdrop-blur-lg transition-all duration-300 hover:scale-105 hover:shadow-blue-500/20">
               <div className="flex items-center">
                 <div className="flex size-12 items-center justify-center rounded-full bg-indigo-700 text-xl font-bold text-white">
                   AJ
@@ -223,7 +223,7 @@ const LandingPage = () => {
               </p>
             </div>
             {/* Testimonial 2 */}
-            <div className="hover-float rounded-xl border border-purple-500/20 bg-[#101830]/70 p-8 backdrop-blur-lg transition-all duration-500 hover:shadow-purple-500/20">
+            <div className="rounded-xl border border-purple-500/20 bg-[#101830]/70 p-8 backdrop-blur-lg transition-all duration-300 hover:scale-105 hover:shadow-purple-500/20">
               <div className="flex items-center">
                 <div className="flex size-12 items-center justify-center rounded-full bg-purple-700 text-xl font-bold text-white">
                   SC
@@ -243,7 +243,7 @@ const LandingPage = () => {
               </p>
             </div>
             {/* Testimonial 3 */}
-            <div className="hover-float rounded-xl border border-blue-500/20 bg-[#101830]/70 p-8 backdrop-blur-lg transition-all duration-500 hover:shadow-blue-500/20">
+            <div className="rounded-xl border border-blue-500/20 bg-[#101830]/70 p-8 backdrop-blur-lg transition-all duration-300 hover:scale-105 hover:shadow-blue-500/20">
               <div className="flex items-center">
                 <div className="flex size-12 items-center justify-center rounded-full bg-indigo-700 text-xl font-bold text-white">
                   MT
@@ -306,9 +306,9 @@ const LandingPage = () => {
             })}
           </div>
         </div>
-        <div className="hover-float relative z-10 mx-auto max-w-5xl rounded-2xl bg-gradient-to-br from-[#162a4a]/90 via-[#1a2d4d]/85 to-[#0f1b36]/90 p-16 shadow-2xl backdrop-blur-md">
+        <div className="relative z-10 mx-auto max-w-5xl rounded-2xl bg-gradient-to-br from-[#162a4a]/90 via-[#1a2d4d]/85 to-[#0f1b36]/90 p-16 shadow-2xl backdrop-blur-md transition-all duration-300 hover:scale-105">
           {" "}
-          {/* Added hover-float class */}
+          {/* Using scale effect on hover */}
           {/* Cool background elements inside the box */}
           <div className="absolute inset-0 overflow-hidden rounded-2xl">
             {/* Abstract shapes */}
@@ -391,7 +391,7 @@ const LandingPage = () => {
             </a>
           </div>
           <div className="text-sm text-gray-500">
-            © 2025 NeuroSphere. All rights reserved.
+            &copy; 2025 NeuroSphere. All rights reserved.
           </div>
         </div>
       </footer>
