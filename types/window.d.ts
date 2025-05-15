@@ -6,5 +6,8 @@ interface Window {
     removeListener: (event: string, callback: (...args: any[]) => void) => void;
     selectedAddress?: string;
     chainId?: string;
+    _metamask?: {
+      isUnlocked: () => Promise<boolean>;
+    };
   };
 }

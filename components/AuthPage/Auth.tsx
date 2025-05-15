@@ -5,22 +5,22 @@ import React, { useState, useEffect } from "react";
 const AnimatedLogo = ({ size = "16" }: { size?: string }) => {
   return (
     <div
-      className={`relative flex items-center justify-center size-${size}`}
+      className={`relative flex items-center justify-center w-${size} h-${size}`}
       aria-hidden="true"
     >
       <div className="absolute inset-0 flex items-center justify-center">
-        <div className="size-8 rounded-full bg-purple-600 opacity-70"></div>
+        <div className="w-8 h-8 rounded-full bg-purple-600 opacity-70"></div>
       </div>
       <div className="absolute inset-0 flex items-center justify-center">
-        <div className="size-8 animate-ripple rounded-full border-2 border-purple-500"></div>
+        <div className="w-8 h-8 animate-ripple rounded-full border-2 border-purple-500"></div>
       </div>
       <div className="absolute inset-0 flex items-center justify-center">
-        <div className="size-8 animate-ripple-delay rounded-full border-2 border-purple-400"></div>
+        <div className="w-8 h-8 animate-ripple-delay rounded-full border-2 border-purple-400"></div>
       </div>
       <div className="absolute inset-0 flex items-center justify-center">
-        <div className="size-8 animate-ripple-delay-2 rounded-full border-2 border-purple-300"></div>
+        <div className="w-8 h-8 animate-ripple-delay-2 rounded-full border-2 border-purple-300"></div>
       </div>
-      <div className="relative size-8 rounded-full bg-gradient-to-br from-purple-600 to-indigo-600 shadow-lg">
+      <div className="relative w-8 h-8 rounded-full bg-gradient-to-br from-purple-600 to-indigo-600 shadow-lg">
         <div className="absolute inset-0 rounded-full bg-black opacity-20"></div>
         <div className="absolute inset-0 rounded-full bg-gradient-to-br from-transparent to-black opacity-30"></div>
       </div>
@@ -54,25 +54,7 @@ const InputField = ({ icon, type, placeholder, id }: InputFieldProps) => {
   );
 };
 
-// Create a TypeScript definition for the Ethereum window object
-declare global {
-  interface Window {
-    ethereum?: {
-      isMetaMask?: boolean;
-      _metamask?: {
-        isUnlocked: () => Promise<boolean>;
-      };
-      request: (request: { method: string; params?: any[] }) => Promise<any>;
-      on: (event: string, callback: (...args: any[]) => void) => void;
-      removeListener: (
-        event: string,
-        callback: (...args: any[]) => void
-      ) => void;
-      selectedAddress?: string;
-      chainId?: string;
-    };
-  }
-}
+// Remove the duplicate Window interface declaration since it's now in window.d.ts
 
 export default function LoginPage() {
   const [demoMode, setDemoMode] = useState(true);
@@ -102,10 +84,10 @@ export default function LoginPage() {
       // Request account access
       if (window.ethereum) {
         const provider = window.ethereum;
-
+        
         // Force MetaMask popup to appear
         console.log("Requesting accounts...");
-
+        
         // Use a more direct approach without optional chaining
         const accounts = await provider.request({
           method: "eth_requestAccounts",
@@ -116,10 +98,10 @@ export default function LoginPage() {
         if (accounts && accounts.length > 0) {
           setWalletAddress(accounts[0]);
           console.log("Connected to wallet:", accounts[0]);
-
+          
           // Store connection in localStorage for persistence
-          localStorage.setItem("walletConnected", "true");
-          localStorage.setItem("walletAddress", accounts[0]);
+          localStorage.setItem('walletConnected', 'true');
+          localStorage.setItem('walletAddress', accounts[0]);
         } else {
           setError("No accounts found. Please create an account in MetaMask.");
         }
@@ -152,8 +134,8 @@ export default function LoginPage() {
   // Disconnect wallet
   const disconnectWallet = () => {
     setWalletAddress(null);
-    localStorage.removeItem("walletConnected");
-    localStorage.removeItem("walletAddress");
+    localStorage.removeItem('walletConnected');
+    localStorage.removeItem('walletAddress');
   };
 
   // Check for existing connection on component mount
@@ -162,21 +144,20 @@ export default function LoginPage() {
       if (isMetaMaskInstalled() && window.ethereum) {
         try {
           // Check if we have a stored connection
-          const isConnected =
-            localStorage.getItem("walletConnected") === "true";
-
+          const isConnected = localStorage.getItem('walletConnected') === 'true';
+          
           if (isConnected) {
             const accounts = await window.ethereum.request({
-              method: "eth_accounts",
+              method: 'eth_accounts'
             });
-
+            
             if (accounts && accounts.length > 0) {
               setWalletAddress(accounts[0]);
               console.log("Reconnected to wallet:", accounts[0]);
             } else {
               // Clear stored connection if no accounts available
-              localStorage.removeItem("walletConnected");
-              localStorage.removeItem("walletAddress");
+              localStorage.removeItem('walletConnected');
+              localStorage.removeItem('walletAddress');
             }
           }
         } catch (error) {
@@ -184,7 +165,7 @@ export default function LoginPage() {
         }
       }
     };
-
+    
     checkExistingConnection();
   }, []);
 
@@ -195,12 +176,12 @@ export default function LoginPage() {
         if (accounts.length === 0) {
           // User disconnected their wallet
           setWalletAddress(null);
-          localStorage.removeItem("walletConnected");
-          localStorage.removeItem("walletAddress");
+          localStorage.removeItem('walletConnected');
+          localStorage.removeItem('walletAddress');
         } else if (accounts[0] !== walletAddress) {
           // User switched accounts
           setWalletAddress(accounts[0]);
-          localStorage.setItem("walletAddress", accounts[0]);
+          localStorage.setItem('walletAddress', accounts[0]);
         }
       };
 
