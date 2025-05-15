@@ -5,22 +5,22 @@ import React, { useState, useEffect } from "react";
 const AnimatedLogo = ({ size = "16" }: { size?: string }) => {
   return (
     <div
-      className={`relative flex items-center justify-center w-${size} h-${size}`}
+      className={`w- relative flex items-center justify-center${size} h-${size}`}
       aria-hidden="true"
     >
       <div className="absolute inset-0 flex items-center justify-center">
-        <div className="w-8 h-8 rounded-full bg-purple-600 opacity-70"></div>
+        <div className="size-8 rounded-full bg-purple-600 opacity-70"></div>
       </div>
       <div className="absolute inset-0 flex items-center justify-center">
-        <div className="w-8 h-8 animate-ripple rounded-full border-2 border-purple-500"></div>
+        <div className="animate-ripple size-8 rounded-full border-2 border-purple-500"></div>
       </div>
       <div className="absolute inset-0 flex items-center justify-center">
-        <div className="w-8 h-8 animate-ripple-delay rounded-full border-2 border-purple-400"></div>
+        <div className="animate-ripple-delay size-8 rounded-full border-2 border-purple-400"></div>
       </div>
       <div className="absolute inset-0 flex items-center justify-center">
-        <div className="w-8 h-8 animate-ripple-delay-2 rounded-full border-2 border-purple-300"></div>
+        <div className="animate-ripple-delay-2 size-8 rounded-full border-2 border-purple-300"></div>
       </div>
-      <div className="relative w-8 h-8 rounded-full bg-gradient-to-br from-purple-600 to-indigo-600 shadow-lg">
+      <div className="relative size-8 rounded-full bg-gradient-to-br from-purple-600 to-indigo-600 shadow-lg">
         <div className="absolute inset-0 rounded-full bg-black opacity-20"></div>
         <div className="absolute inset-0 rounded-full bg-gradient-to-br from-transparent to-black opacity-30"></div>
       </div>
@@ -76,7 +76,8 @@ export default function LoginPage() {
       setError(
         "MetaMask is not installed. Please install MetaMask to continue."
       );
-      return;
+      
+return;
     }
 
     try {
@@ -224,7 +225,7 @@ export default function LoginPage() {
         </div>
         <div className="mb-6 rounded-lg bg-gray-800 p-8 shadow-xl">
           <div className="mb-6 flex flex-col items-center justify-center">
-            <div className="mb-4 flex items-center justify-center rounded-full bg-purple-600 size-12">
+            <div className="mb-4 flex size-12 items-center justify-center rounded-full bg-purple-600">
               <svg
                 className="size-6 text-white"
                 xmlns="http://www.w3.org/2000/svg"
@@ -261,7 +262,6 @@ export default function LoginPage() {
               </button>
             </div>
           </div>
-
           {walletAddress ? (
             <div className="space-y-6">
               <div className="rounded-md bg-gray-700 p-4">
@@ -280,7 +280,6 @@ export default function LoginPage() {
                   </button>
                 </div>
               </div>
-
               <button
                 type="button"
                 onClick={handleSubmit}
@@ -391,13 +390,11 @@ export default function LoginPage() {
                   </div>
                 </button>
               </form>
-
               <div className="mt-6 flex items-center">
-                <div className="flex-grow border-t border-gray-700"></div>
+                <div className="grow border-t border-gray-700"></div>
                 <span className="mx-4 text-sm text-gray-500">OR</span>
-                <div className="flex-grow border-t border-gray-700"></div>
+                <div className="grow border-t border-gray-700"></div>
               </div>
-
               <button
                 type="button"
                 onClick={connectWallet}
@@ -482,7 +479,6 @@ export default function LoginPage() {
               </button>
             </>
           )}
-
           {error && (
             <div className="mt-4 rounded-md bg-red-500/10 p-3 text-sm text-red-500">
               {error}
