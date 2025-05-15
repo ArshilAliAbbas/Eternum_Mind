@@ -59,7 +59,7 @@ const LandingPage = () => {
       {/* Subtitle */}
       <p className="z-10 mt-6 max-w-3xl text-center text-lg text-gray-300 md:text-xl">
         Track your moods, journal your thoughts, and discover deeper insights
-        about yourself with NeuroSphere's comprehensive mental wellness tools.
+        about yourself with Eterum Mind's comprehensive mental wellness tools.
       </p>
       {/* CTA Buttons */}
       <div className="z-10 mt-8 flex flex-wrap justify-center gap-6">
@@ -197,7 +197,7 @@ const LandingPage = () => {
             What Our Users Say
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-center text-lg text-gray-300">
-            Discover how NeuroSphere has helped people on their mental wellness
+            Discover how Eterum Mind has helped people on their mental wellness
             journey.
           </p>
           {/* Testimonials */}
@@ -218,7 +218,7 @@ const LandingPage = () => {
                 </div>
               </div>
               <p className="mt-6 italic text-gray-300">
-                NeuroSphere has transformed my self-awareness. The mood tracking
+                Eterum Mind has transformed my self-awareness. The mood tracking
                 feature helps me recognize patterns I never noticed before.
               </p>
             </div>
@@ -351,7 +351,7 @@ const LandingPage = () => {
               {/* Enhanced button */}
               <Sparkles className="mr-3 size-6" />
               <span className="relative z-10">
-                Begin Your NeuroSphere Experience
+                Begin Your Eterum Mind Experience
               </span>
             </Button>
             <Button
@@ -370,7 +370,7 @@ const LandingPage = () => {
           <div className="mb-6 flex items-center justify-center">
             <div className="flex items-center">
               <div className="mr-2 size-6 rounded-full bg-blue-600"></div>
-              <span className="text-xl font-bold">NeuroSphere</span>
+              <span className="text-xl font-bold">Eterum Mind</span>
             </div>
           </div>
           <div className="mb-6 flex flex-wrap justify-center gap-8">
@@ -391,7 +391,7 @@ const LandingPage = () => {
             </a>
           </div>
           <div className="text-sm text-gray-500">
-            &copy; 2025 NeuroSphere. All rights reserved.
+            &copy; 2025 Eterum Mind. All rights reserved.
           </div>
         </div>
       </footer>

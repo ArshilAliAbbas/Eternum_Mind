@@ -29,7 +29,7 @@ const Dashboard: React.FC = () => {
             {/* Content with proper spacing */}
             <div className="relative z-10 p-4">
               {/* User greeting */}
-              <div className="mb-4"><h1 className="mb-1 text-3xl font-bold tracking-tight md:text-4xl"><span className="bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">Good Morning, {userName}</span></h1><p className="mt-1 text-base text-gray-300">Welcome to your personal NeuroSphere. What would you like to explore today?</p></div>
+              <div className="mb-4"><h1 className="mb-1 text-3xl font-bold tracking-tight md:text-4xl"><span className="bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">Good Morning, {userName}</span></h1><p className="mt-1 text-base text-gray-300">Welcome to your personal Eterum Mind. What would you like to explore today?</p></div>
               {/* Action buttons with enhanced styling */}
               <div className="flex flex-wrap gap-4">
                 <Link href="/journal" className="group flex items-center gap-2 rounded-lg bg-indigo-600 px-5 py-2.5 text-base font-medium text-white transition-all hover:bg-indigo-700 hover:shadow-lg hover:shadow-indigo-600/20">
