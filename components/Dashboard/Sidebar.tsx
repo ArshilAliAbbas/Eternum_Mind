@@ -40,7 +40,7 @@ const Sidebar: React.FC = () => {
       </div>
       {/* Title with transition */}
       <div className={`overflow-hidden px-2 text-center transition-all duration-300 ${expanded ? 'max-h-20 opacity-100' : 'max-h-0 opacity-0'}`}>
-        <span className="text-lg font-bold text-white">NeuroSphere</span>
+        <span className="text-lg font-bold text-white">Eterum Mind</span>
       </div>
       <nav className="mt-8 flex flex-1 flex-col px-2">
         <ul className="space-y-4">
