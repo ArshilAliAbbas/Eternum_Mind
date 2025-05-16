@@ -7,11 +7,13 @@ import Sidebar from '@/components/Dashboard/Sidebar';
 
 const JournalEntriesPage = () => {
   return (
-    <div className="flex min-h-screen bg-[#0c1222]">
+    <div className="min-h-screen bg-[#0c1222]">
       <Sidebar />
-      <div className="flex-1">
-        <JournalEntries />
-      </div>
+      <main className="relative min-h-screen overflow-y-auto pl-[80px] transition-all duration-300 ease-out">
+        <div className="relative z-10">
+          <JournalEntries />
+        </div>
+      </main>
     </div>
   );
 };
