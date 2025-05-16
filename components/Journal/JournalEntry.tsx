@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Calendar,
   Save,
@@ -9,7 +9,6 @@ import {
   Lock,
   Upload,
   Heart,
-  PenLine,
   Clock,
   Smile,
   Frown,
@@ -21,7 +20,10 @@ import {
   HelpCircle,
   Tag,
   Plus,
+  Image as ImageIcon,
+  X,
 } from "lucide-react";
+import Image from "next/image";
 
 const JournalEntry: React.FC = () => {
   const [title, setTitle] = useState("");
@@ -33,6 +35,8 @@ const JournalEntry: React.FC = () => {
   const [lastSaved, setLastSaved] = useState<string | null>(null);
   const [saveMessage, setSaveMessage] = useState("");
   const [showPlaceholder, setShowPlaceholder] = useState(true);
+  const [images, setImages] = useState<string[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Load saved entry from localStorage if it exists
   useEffect(() => {
@@ -43,6 +47,7 @@ const JournalEntry: React.FC = () => {
       setContent(parsedEntry.content || "");
       setSelectedMood(parsedEntry.mood || null);
       setTags(parsedEntry.tags || []);
+      setImages(parsedEntry.images || []);
       setWordCount(
         parsedEntry.content ? parsedEntry.content.trim().split(/\s+/).length : 0
       );
@@ -77,6 +82,25 @@ const JournalEntry: React.FC = () => {
     setSelectedMood(mood === selectedMood ? null : mood);
   };
 
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const newImages = Array.from(e.target.files).map(file => {
+        return URL.createObjectURL(file);
+      });
+      setImages([...images, ...newImages]);
+    }
+  };
+
+  const triggerFileInput = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const removeImage = (indexToRemove: number) => {
+    setImages(images.filter((_, index) => index !== indexToRemove));
+  };
+
   const saveEntry = () => {
     const now = new Date();
     const entry = {
@@ -84,6 +108,7 @@ const JournalEntry: React.FC = () => {
       content,
       mood: selectedMood,
       tags,
+      images,
       date: now.toISOString(),
       wordCount,
     };
@@ -194,18 +219,55 @@ const JournalEntry: React.FC = () => {
           <div className="absolute bottom-0 left-0 h-px w-4 bg-gradient-to-r from-yellow-500/50 to-transparent"></div>
           <div className="absolute bottom-0 right-0 h-4 w-px bg-gradient-to-t from-yellow-500/50 to-transparent"></div>
           <div className="absolute bottom-0 right-0 h-px w-4 bg-gradient-to-r from-transparent to-yellow-500/50"></div>
-          <textarea
-            value={content}
-            onChange={handleContentChange}
-            placeholder=""
-            className="min-h-[300px] w-full bg-transparent p-4 text-lg focus:outline-none"
-          />
-          {showPlaceholder && (
-            <div className="pointer-events-none absolute left-0 top-0 flex size-full flex-col items-center justify-center p-4 text-gray-500">
-              <PenLine size={40} className="mb-4 opacity-20" />
-              <p className="text-center">Start writing your thoughts...</p>
+          <div className="relative mb-6 flex-1 rounded-lg border border-[#1e293b] bg-[#0f1729] p-5">
+            <textarea
+              placeholder="What's on your mind today?"
+              value={content}
+              onChange={handleContentChange}
+              className="size-full min-h-[300px] resize-none bg-transparent text-gray-300 placeholder:text-gray-500 focus:outline-none"
+            ></textarea>
+            {showPlaceholder && content === "" && (
+              <div className="pointer-events-none absolute left-0 top-0 p-5 text-gray-500">
+                <p>What's on your mind today?</p>
+                <p className="mt-4 text-sm text-gray-600">
+                  This is your safe space. Write freely about your thoughts,
+                  feelings, and experiences...
+                </p>
+              </div>
+            )}
+            <div className="absolute bottom-4 right-4 flex items-center gap-2">
+              <input 
+                type="file" 
+                ref={fileInputRef} 
+                onChange={handleImageUpload} 
+                className="hidden" 
+                accept="image/*" 
+                multiple 
+              />
+              <button
+                onClick={triggerFileInput}
+                className="flex items-center gap-1 rounded-md bg-[#1e293b] px-3 py-1.5 text-xs text-gray-300 hover:bg-[#283548]"
+              >
+                <ImageIcon size={14} />
+                Add Images
+              </button>
             </div>
-          )}
+            {images.length > 0 && (
+              <div className="mt-4 flex flex-wrap gap-2">
+                {images.map((image, index) => (
+                  <div key={index} className="relative size-20 overflow-hidden rounded-md border border-[#1e293b]">
+                    <Image src={image} alt="Journal image" width={80} height={80} className="size-full object-cover" unoptimized />
+                    <button 
+                      onClick={() => removeImage(index)}
+                      className="absolute right-1 top-1 flex size-5 items-center justify-center rounded-full bg-black/70 text-white hover:bg-black"
+                    >
+                      <X size={12} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
         <div className="my-8 border-t border-[#1e293b]"></div>
         <div className="mb-6">
