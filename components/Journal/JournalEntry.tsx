@@ -22,6 +22,7 @@ import {
   Plus,
   Image as ImageIcon,
   X,
+  PenLine,
 } from "lucide-react";
 import Image from "next/image";
 
@@ -219,6 +220,41 @@ const JournalEntry: React.FC = () => {
           <div className="absolute bottom-0 left-0 h-px w-4 bg-gradient-to-r from-yellow-500/50 to-transparent"></div>
           <div className="absolute bottom-0 right-0 h-4 w-px bg-gradient-to-t from-yellow-500/50 to-transparent"></div>
           <div className="absolute bottom-0 right-0 h-px w-4 bg-gradient-to-r from-transparent to-yellow-500/50"></div>
+          <textarea
+            value={content}
+            onChange={handleContentChange}
+            placeholder=""
+            className="min-h-[300px] w-full bg-transparent p-4 text-lg focus:outline-none"
+          />
+          {showPlaceholder && (
+          <div className="pointer-events-none absolute left-0 top-0 flex size-full flex-col items-center justify-center p-4 text-gray-500">
+            <PenLine size={40} className="mb-4 opacity-20" />
+            <p className="text-center">Start writing your thoughts...</p>
+            <form className="w-full max-w-md rounded bg-white p-4 shadow-lg">
+              <textarea
+                 value={content}
+                 onChange={handleContentChange}
+                 placeholder="Type your text here..."
+                 className="mb-4 w-full rounded border border-gray-300 p-2"
+               />
+              <input
+                 type="file"
+                 onChange={(e) => {
+                   const file = e.target.files?.[0];
+                   if (file) {
+                     // Handle the image file here
+                     console.log('Selected file:', file);
+                   }
+                 }}
+                 accept="image/*"
+                 className="mb-4 w-full rounded border border-gray-300 p-2"
+               />
+              <button type="submit" className="w-full rounded bg-blue-500 p-2 text-white">
+                Upload
+              </button>
+            </form>
+          </div>
+          )}
           <div className="relative mb-6 flex-1 rounded-lg border border-[#1e293b] bg-[#0f1729] p-5">
             <textarea
               placeholder="What's on your mind today?"
