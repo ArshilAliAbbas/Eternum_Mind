@@ -16,7 +16,11 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
+// Safely check if we're in a browser environment
+const isBrowser = typeof window !== 'undefined';
+
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  // Default values that work on both server and client
   const [colorTheme, setColorTheme] = useState<ColorTheme>('purple');
   const [themeMode, setThemeMode] = useState<ThemeMode>('dark');
   const [isDarkMode, setIsDarkMode] = useState(true);
@@ -94,9 +98,9 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     },
   };
 
-  // Function to apply theme colors to CSS variables
+  // Function to apply theme colors to CSS variables - safe for SSR
   const applyThemeColors = (theme: ColorTheme, isDark: boolean) => {
-    if (typeof window === 'undefined' || typeof document === 'undefined') return;
+    if (!isBrowser) return;
     
     const root = document.documentElement;
     
@@ -157,9 +161,9 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   };
 
-  // Initialize theme from localStorage on client-side
+  // Initialize theme from localStorage on client-side only
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (!isBrowser) return;
     
     try {
       // Load saved preferences from localStorage
@@ -181,33 +185,14 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
                           prefersDark;
       
       setIsDarkMode(newIsDarkMode);
-      
-      // Apply initial theme
-      applyThemeColors(savedColorTheme as ColorTheme || 'purple', newIsDarkMode);
-      
-      // Apply initial classes
-      if (newIsDarkMode) {
-        document.documentElement.classList.add('dark');
-        document.documentElement.classList.remove('light');
-        document.body.classList.add('dark-mode');
-        document.body.classList.remove('light-mode');
-      } else {
-        document.documentElement.classList.add('light');
-        document.documentElement.classList.remove('dark');
-        document.body.classList.add('light-mode');
-        document.body.classList.remove('dark-mode');
-      }
-      
-      // Set theme data attribute
-      document.documentElement.dataset.theme = savedColorTheme || 'purple';
     } catch (error) {
       console.error('Error initializing theme:', error);
     }
   }, []);
   
-  // Listen for system preference changes
+  // Listen for system preference changes - client-side only
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (!isBrowser) return;
     
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     
@@ -222,9 +207,9 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return () => mediaQuery.removeEventListener('change', handleChange);
   }, [themeMode]);
 
-  // Update theme when settings change
+  // Update theme when settings change - client-side only
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (!isBrowser) return;
     
     try {
       // Save preferences to localStorage

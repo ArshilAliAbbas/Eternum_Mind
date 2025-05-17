@@ -20,7 +20,8 @@ const SettingsLayout: React.FC = () => {
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-bold">Settings</h1>
-      {/* Tabs */}<div className="overflow-hidden rounded-lg border border-[#1a2747]/50 bg-[#0d1530]/50 backdrop-blur-sm">
+      {/* Tabs */}
+      <div className="overflow-hidden rounded-lg border border-[#1a2747]/50 bg-[#0d1530]/50 backdrop-blur-sm">
         <div className="flex">
           {tabs.map((tab) => (
             <button
@@ -38,7 +39,8 @@ const SettingsLayout: React.FC = () => {
           ))}
         </div>
       </div>
-      {/* Content */}<div className="overflow-hidden rounded-lg border border-[#1a2747]/50 bg-[#0d1530]/50 p-6 backdrop-blur-sm">
+      {/* Content */}
+      <div className="overflow-hidden rounded-lg border border-[#1a2747]/50 bg-[#0d1530]/50 p-6 backdrop-blur-sm">
         {activeTab === 'general' && <div>General settings content</div>}
         {activeTab === 'notifications' && <div>Notifications settings content</div>}
         {activeTab === 'appearance' && <AppearanceSettings />}

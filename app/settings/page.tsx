@@ -17,7 +17,9 @@ const SettingsPage: React.FC = () => {
           <div className="absolute inset-0 bg-[url('/noise.svg')] opacity-[0.02]"></div>
           <div className="absolute inset-0 bg-gradient-to-b from-[#050a18]/80 via-[#050a18] to-[#050a18]"></div>
         </div>
-        {/* Content container */}<div className="relative z-10 mx-auto max-w-[1400px] px-4 py-8 sm:px-6 lg:px-8"><SettingsLayout />
+        {/* Content container */}
+        <div className="relative z-10 mx-auto max-w-[1400px] px-4 py-8 sm:px-6 lg:px-8">
+          <SettingsLayout />
         </div>
       </main>
     </div>
