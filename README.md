@@ -1,6 +1,6 @@
 Welcome to <h1>Eternum Mind </h1>
 
-Our idea got absolutely obliterated in the First round of hackathon and i think this would one day would blow the minds of the judges who works at Apollo, Toufeeq and will conqure the World one day, this is meant to the Noth Amrican Continents not the Middle East.
+Our idea got absolutely obliterated in the First round of hackathon and i think this would one day would blow the minds of the judges who works at Apollo, Toufeeq and will conqure the World one day, this is meant to the Noth American Continents not the Middle East.
 
 
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
