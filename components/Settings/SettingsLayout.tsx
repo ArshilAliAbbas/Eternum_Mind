@@ -16,7 +16,8 @@ const SettingsLayout: React.FC = () => {
     { id: 'appearance', label: 'Appearance', icon: <Palette size={18} /> },
     { id: 'privacy', label: 'Privacy', icon: <Shield size={18} /> },
   ];
-
+  
+// heel
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-bold">Settings</h1>
