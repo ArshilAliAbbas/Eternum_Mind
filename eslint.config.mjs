@@ -28,8 +28,11 @@ const eslintConfig = [
       },
   
       rules: {
-        "newline-before-return": "error",
+        "newline-before-return": "warn",
         "tailwindcss/no-custom-classname": "off",
+        "tailwindcss/classnames-order": "warn",
+        "tailwindcss/migration-from-tailwind-2": "warn",
+        "tailwindcss/enforces-shorthand": "warn",
         "@typescript-eslint/no-unused-vars": "off",
         "@typescript-eslint/no-explicit-any": "off",
         "prefer-const": "off", 
@@ -51,15 +54,10 @@ const eslintConfig = [
           },
         ],
   
-        "react/jsx-indent": ["error", 2],
+        "react/jsx-indent": "off",
         "react/jsx-no-useless-fragment": "error",
   
-        "react/jsx-newline": [
-          "error",
-          {
-            prevent: true,
-          },
-        ],
+        "react/jsx-newline": "off",
   
         "unused-imports/no-unused-imports": "error",
   

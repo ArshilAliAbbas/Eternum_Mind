@@ -30,21 +30,7 @@ const AnimatedLogo = ({ size = "16" }: { size?: string }) => {
   );
 };
 
-// Define interface for Ethereum window object
-declare global {
-  interface Window {
-    ethereum?: {
-      isMetaMask?: boolean;
-      request: (request: { method: string; params?: any[] }) => Promise<any>;
-      on: (eventName: string, callback: (...args: any[]) => void) => void;
-      removeListener: (
-        eventName: string,
-        callback: (...args: any[]) => void
-      ) => void;
-      chainId?: string;
-    };
-  }
-}
+// Using the global Ethereum window object interface from types/ethereum.d.ts
 
 export default function LoginPage() {
   const router = useRouter();
@@ -61,6 +47,7 @@ export default function LoginPage() {
     const interval = setInterval(() => {
       setAnimationState((prev) => (prev + 1) % 4);
     }, 3000);
+
     return () => clearInterval(interval);
   }, []);
 
@@ -269,11 +256,9 @@ export default function LoginPage() {
             Unlock the full potential of your mental well-being journey
           </p>
         </div>
-
-        <div className="mb-6 rounded-lg bg-gray-800 p-8 shadow-xl transform transition-all duration-500 hover:shadow-2xl">
-          <div className="mb-6 flex flex-col items-center justify-center">
-            <div
-              className={`mb-4 flex size-16 items-center justify-center rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 transform transition-all duration-500 ${animationState === 1 ? "scale-110" : ""}`}
+        <div className="mb-6 rounded-lg bg-gray-800 p-8 shadow-xl transition-all duration-500 hover:shadow-2xl">
+          <div className="mb-6 flex flex-col items-center justify-center"><div
+              className={`mb-4 flex size-16 items-center justify-center rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 transition-all duration-500 ${animationState === 1 ? "scale-110" : ""}`}
             >
               <svg
                 className="size-8 text-white"
@@ -305,9 +290,7 @@ export default function LoginPage() {
             )}
           </div>
 
-          {walletAddress ? (
-            <div className="space-y-6">
-              <div className="rounded-md bg-gray-700 p-4 transform transition-all duration-300 hover:bg-gray-600">
+          {walletAddress ? (<div className="space-y-6"><div className="rounded-md bg-gray-700 p-4 transition-all duration-300 hover:bg-gray-600">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-400">Connected Wallet</p>
@@ -317,16 +300,14 @@ export default function LoginPage() {
                   </div>
                   <button
                     onClick={disconnectWallet}
-                    className="rounded-md bg-gray-600 px-3 py-1 text-sm text-white hover:bg-gray-500 transition-colors duration-300"
+                    className="rounded-md bg-gray-600 px-3 py-1 text-sm text-white transition-colors duration-300 hover:bg-gray-500"
                   >
                     Disconnect
                   </button>
                 </div>
               </div>
 
-              <button
-                type="button"
-                onClick={() => router.push("/dashboard")}
+              <button type="button" onClick={() => router.push("/dashboard")}
                 className="relative w-full overflow-hidden rounded-md bg-gradient-to-r from-purple-600 to-blue-500 px-4 py-3 font-medium text-white transition-all duration-300 ease-in-out hover:from-purple-700 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
                 onMouseDown={() => setIsPressed(true)}
                 onMouseUp={() => setIsPressed(false)}
@@ -354,21 +335,17 @@ export default function LoginPage() {
             </div>
           ) : (
             <div className="space-y-6">
-              <div
-                className={`p-6 rounded-lg bg-gray-700/50 flex flex-col items-center justify-center transform transition-all duration-500 ${animationState === 2 ? "scale-105" : ""}`}
-              >
-                <div className="text-center mb-4">
-                  <p className="text-lg text-white font-medium mb-2">
+              <div className={`flex flex-col items-center justify-center rounded-lg bg-gray-700/50 p-6 transition-all duration-500 ${animationState === 2 ? "scale-105" : ""}`}>
+                <div className="mb-4 text-center">
+                  <p className="mb-2 text-lg font-medium text-white">
                     Connect with MetaMask
                   </p>
-                  <p className="text-gray-400 text-sm">
+                  <p className="text-sm text-gray-400">
                     Secure, decentralized access to Eternum Mind
                   </p>
                 </div>
 
-                <div className="flex justify-center mb-4">
-                  <div
-                    className={`size-16 p-2 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 transform transition-all duration-500 ${animationState === 3 ? "rotate-12" : ""}`}
+                <div className="mb-4 flex justify-center"><div className={`size-16 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 p-2 transition-all duration-500 ${animationState === 3 ? "rotate-12" : ""}`}
                   >
                     <svg
                       viewBox="0 0 122.88 107.39"
@@ -444,15 +421,12 @@ export default function LoginPage() {
                 </div>
               </div>
 
-              <button
-                type="button"
-                onClick={connectWallet}
-                className="relative w-full overflow-hidden rounded-md bg-gradient-to-r from-orange-500 to-amber-500 px-4 py-4 font-medium text-white transition-all duration-300 ease-in-out hover:from-orange-600 hover:to-amber-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 group"
+              <button type="button" onClick={connectWallet}
+                className="group relative w-full overflow-hidden rounded-md bg-gradient-to-r from-orange-500 to-amber-500 p-4 font-medium text-white transition-all duration-300 ease-in-out hover:from-orange-600 hover:to-amber-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
                 disabled={isConnecting}
               >
-                <div className="absolute inset-0 bg-white/10 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-500"></div>
-                <div className="flex items-center justify-center relative">
-                  <svg
+                <div className="absolute inset-0 origin-left scale-x-0 bg-white/10 transition-transform duration-500 group-hover:scale-x-100"></div>
+                <div className="relative flex items-center justify-center"><svg
                     width="24"
                     height="24"
                     viewBox="0 0 122.88 107.39"
@@ -513,14 +487,11 @@ export default function LoginPage() {
                   </span>
                 </div>
               </button>
-
-              {!isMetaMaskInstalled() && (
-                <div className="mt-4 text-center">
-                  <a
+              {!isMetaMaskInstalled() && (<div className="mt-4 text-center"><a
                     href="https://metamask.io/download/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-orange-400 hover:text-orange-300 transition-colors duration-300"
+                    className="text-orange-400 transition-colors duration-300 hover:text-orange-300"
                   >
                     Don't have MetaMask? Install it now →
                   </a>
@@ -528,16 +499,12 @@ export default function LoginPage() {
               )}
             </div>
           )}
-          {error && (
-            <div className="mt-4 rounded-md bg-red-500/10 p-3 text-sm text-red-500 animate-pulse">
+          {error && (<div className="mt-4 animate-pulse rounded-md bg-red-500/10 p-3 text-sm text-red-500">
               {error}
             </div>
           )}
         </div>
-
-        <div className="text-center">
-          <p className="text-gray-400">
-            By connecting, you agree to our{" "}
+        <div className="text-center"><p className="text-gray-400">By connecting, you agree to our{" "}
             <a
               href="#"
               className="font-medium text-purple-400 transition-colors duration-300 hover:text-purple-300"
