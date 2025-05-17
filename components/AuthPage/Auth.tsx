@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 // Animated logo component with ripple effect
 const AnimatedLogo = ({ size = "16" }: { size?: string }) => {
@@ -34,9 +35,18 @@ interface InputFieldProps {
   type: string;
   placeholder: string;
   id: string;
+  value?: string;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const InputField = ({ icon, type, placeholder, id }: InputFieldProps) => {
+const InputField = ({ 
+  icon, 
+  type, 
+  placeholder, 
+  id, 
+  value, 
+  onChange 
+}: InputFieldProps) => {
   return (
     <div className="relative">
       <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
@@ -49,84 +59,115 @@ const InputField = ({ icon, type, placeholder, id }: InputFieldProps) => {
                   text-gray-200 transition-all duration-300 placeholder:text-gray-500
                   focus:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-500"
         placeholder={placeholder}
+        value={value}
+        onChange={onChange}
       />
     </div>
   );
 };
 
-// Remove the duplicate Window interface declaration since it's now in window.d.ts
+// Define interface for Ethereum window object
+declare global {
+  interface Window {
+
+      isMetaMask?: boolean;
+      request: (request: { method: string; params?: any[] }) => Promise<any>;
+      on: (eventName: string, callback: (...args: any[]) => void) => void;
+      removeListener: (eventName: string, callback: (...args: any[]) => void) => void;
+      chainId?: string;
+    }
+  }
+interface Window {
+  ethereum?: {
+    isMetaMask?: boolean;
+    request: (request: { method: string; params?: any[] }) => Promise<any>;
+    on: (eventName: string, callback: (...args: any[]) => void) => void;
+    removeListener: (eventName: string, callback: (...args: any[]) => void) => void;
+    chainId?: string;
+  };
+}
 
 export default function LoginPage() {
+  const router = useRouter();
   const [demoMode, setDemoMode] = useState(true);
   const [isPressed, setIsPressed] = useState(false);
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
   const [isConnecting, setIsConnecting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [chainId, setChainId] = useState<string | null>(null);
 
   // Check if MetaMask is installed
   const isMetaMaskInstalled = () => {
-    return typeof window !== "undefined" && window.ethereum !== undefined;
+    return typeof window !== 'undefined' && 
+           typeof window.ethereum !== 'undefined' && 
+           window.ethereum.isMetaMask;
   };
 
-  // Connect to MetaMask
+  // Connect to MetaMask wallet
   const connectWallet = async () => {
     setError(null);
-
-    if (!isMetaMaskInstalled()) {
-      setError(
-        "MetaMask is not installed. Please install MetaMask to continue."
-      );
-      
-return;
-    }
-
+    setIsConnecting(true);
+    
     try {
-      setIsConnecting(true);
-      // Request account access
-      if (window.ethereum) {
-        const provider = window.ethereum;
-        
-        // Force MetaMask popup to appear
-        console.log("Requesting accounts...");
-        
-        // Use a more direct approach without optional chaining
-        const accounts = await provider.request({
-          method: "eth_requestAccounts",
-        });
-
-        console.log("Received accounts:", accounts);
-
-        if (accounts && accounts.length > 0) {
-          setWalletAddress(accounts[0]);
-          console.log("Connected to wallet:", accounts[0]);
-          
-          // Store connection in localStorage for persistence
-          localStorage.setItem('walletConnected', 'true');
-          localStorage.setItem('walletAddress', accounts[0]);
-        } else {
-          setError("No accounts found. Please create an account in MetaMask.");
-        }
-      } else {
-        setError(
-          "MetaMask is not available. Please install the MetaMask extension."
-        );
+      // Check if running in browser
+      if (typeof window === 'undefined') {
+        throw new Error('Browser environment not available');
       }
+      
+      // Check if MetaMask is installed
+      if (!isMetaMaskInstalled()) {
+        throw new Error('MetaMask is not installed. Please install MetaMask to continue.');
+      }
+      
+      // Get current chain ID
+      const chainId = await window.ethereum?.request({ method: 'eth_chainId' });
+      setChainId(chainId);
+      
+      // Request account access
+      const accounts = await window.ethereum?.request({
+        method: 'eth_requestAccounts' 
+      });
+      
+      if (!accounts || accounts.length === 0) {
+        throw new Error('No accounts found. Please create an account in MetaMask and try again.');
+      }
+      
+      // Successfully connected
+      const account = accounts[0];
+      console.log('Connected to MetaMask with account:', account);
+      
+      // Set wallet address in state
+      setWalletAddress(account);
+      
+      // Store connection in localStorage for persistence
+      localStorage.setItem('walletConnected', 'true');
+      localStorage.setItem('walletAddress', account);
+      
+      // You can add authentication with your backend here
+      // For example: await authenticateWithWallet(account);
+      
+      // Optional: Redirect to dashboard or another page
+      // router.push('/dashboard');
+      
+      return account;
     } catch (err: any) {
-      console.error("Error connecting to MetaMask:", err);
-      // Handle specific MetaMask errors
+      console.error('Error connecting to MetaMask:', err);
+      
+      // Handle specific errors
       if (err.code === 4001) {
         // User rejected the request
-        setError(
-          "Connection rejected. Please approve the connection request in MetaMask."
-        );
+        setError('You rejected the connection request. Please try again.');
       } else if (err.code === -32002) {
         // Request already pending
-        setError(
-          "Connection request already pending. Please check MetaMask extension."
-        );
+        setError('A connection request is already pending. Please check your MetaMask extension.');
       } else {
-        setError(err.message || "Failed to connect to MetaMask");
+        // Generic error
+        setError(err.message || 'Failed to connect to MetaMask');
       }
+      
+      return null;
     } finally {
       setIsConnecting(false);
     }
@@ -142,13 +183,17 @@ return;
   // Check for existing connection on component mount
   useEffect(() => {
     const checkExistingConnection = async () => {
-      if (isMetaMaskInstalled() && window.ethereum) {
+      if (isMetaMaskInstalled()) {
         try {
+          // Get current chain ID
+          const chainId = await window.ethereum?.request({ method: 'eth_chainId' }) || null;
+          setChainId(chainId);
+          
           // Check if we have a stored connection
           const isConnected = localStorage.getItem('walletConnected') === 'true';
           
           if (isConnected) {
-            const accounts = await window.ethereum.request({
+            const accounts = await window.ethereum?.request({
               method: 'eth_accounts'
             });
             
@@ -170,45 +215,90 @@ return;
     checkExistingConnection();
   }, []);
 
-  // Listen for account changes
+  // Listen for account and chain changes
   useEffect(() => {
     if (isMetaMaskInstalled()) {
+      // Handle account changes
       const handleAccountsChanged = (accounts: string[]) => {
         if (accounts.length === 0) {
           // User disconnected their wallet
           setWalletAddress(null);
           localStorage.removeItem('walletConnected');
           localStorage.removeItem('walletAddress');
+          console.log('Wallet disconnected');
         } else if (accounts[0] !== walletAddress) {
           // User switched accounts
           setWalletAddress(accounts[0]);
           localStorage.setItem('walletAddress', accounts[0]);
+          console.log('Account changed to:', accounts[0]);
         }
       };
 
+      // Handle chain changes
+      const handleChainChanged = (chainId: string) => {
+        console.log('Network changed to:', chainId);
+        setChainId(chainId);
+        // Reload the page to avoid any state inconsistencies
+        window.location.reload();
+      };
+
       window.ethereum?.on("accountsChanged", handleAccountsChanged);
+      window.ethereum?.on("chainChanged", handleChainChanged);
 
       return () => {
-        window.ethereum?.removeListener(
-          "accountsChanged",
-          handleAccountsChanged
-        );
+        window.ethereum?.removeListener("accountsChanged", handleAccountsChanged);
+        window.ethereum?.removeListener("chainChanged", handleChainChanged);
       };
     }
   }, [walletAddress]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Handle form submission
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
     if (!walletAddress) {
-      connectWallet();
+      // If not connected to wallet, try to connect
+      const account = await connectWallet();
+      if (account) {
+        console.log("Successfully connected with wallet:", account);
+      }
     } else {
+      // Already connected, proceed with form submission
       console.log("Form submitted with wallet:", walletAddress);
+      console.log("Email:", email);
+      console.log("Password:", password);
+      
+      // Here you would typically authenticate with your backend
+      // For example:
+      // const success = await loginWithCredentials(email, password, walletAddress);
+      // if (success) router.push('/dashboard');
     }
   };
 
   // Format wallet address for display
   const formatAddress = (address: string) => {
     return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
+  };
+
+  // Get network name from chain ID
+  const getNetworkName = (chainId: string | null) => {
+    if (!chainId) return 'Unknown Network';
+    
+    const networks: Record<string, string> = {
+      '0x1': 'Ethereum Mainnet',
+      '0x3': 'Ropsten Testnet',
+      '0x4': 'Rinkeby Testnet',
+      '0x5': 'Goerli Testnet',
+      '0x2a': 'Kovan Testnet',
+      '0x89': 'Polygon Mainnet',
+      '0x13881': 'Mumbai Testnet',
+      '0xa86a': 'Avalanche Mainnet',
+      '0xa869': 'Avalanche Testnet',
+      '0x38': 'Binance Smart Chain',
+      '0x61': 'BSC Testnet'
+    };
+    
+    return networks[chainId] || `Chain ID: ${chainId}`;
   };
 
   return (
@@ -247,6 +337,11 @@ return;
                 ? `Connected with ${formatAddress(walletAddress)}`
                 : "Enter your credentials or connect with MetaMask"}
             </p>
+            {chainId && walletAddress && (
+              <p className="mt-1 text-center text-sm text-purple-400">
+                {getNetworkName(chainId)}
+              </p>
+            )}
             <div className="mt-2 flex items-center">
               <span className="mr-2 text-sm text-gray-400">Demo Mode</span>
               <button
@@ -333,6 +428,8 @@ return;
                     type="email"
                     placeholder="you@example.com"
                     id="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                   />
                 </div>
                 <div>
@@ -360,6 +457,8 @@ return;
                     type="password"
                     placeholder="••••••••"
                     id="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                   />
                 </div>
                 <button

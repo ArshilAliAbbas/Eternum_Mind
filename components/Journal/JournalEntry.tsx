@@ -201,10 +201,33 @@ const JournalEntry: React.FC = () => {
             className="min-h-[300px] w-full bg-transparent p-4 text-lg focus:outline-none"
           />
           {showPlaceholder && (
-            <div className="pointer-events-none absolute left-0 top-0 flex size-full flex-col items-center justify-center p-4 text-gray-500">
-              <PenLine size={40} className="mb-4 opacity-20" />
-              <p className="text-center">Start writing your thoughts...</p>
-            </div>
+             <div className="pointer-events-none absolute left-0 top-0 flex size-full flex-col items-center justify-center p-4 text-gray-500">
+             <PenLine size={40} className="mb-4 opacity-20" />
+             <p className="text-center">Start writing your thoughts...</p>
+             <form className="w-full max-w-md p-4 bg-white rounded shadow-lg">
+               <textarea
+                 value={content}
+                 onChange={handleContentChange}
+                 placeholder="Type your text here..."
+                 className="w-full p-2 border border-gray-300 rounded mb-4"
+               />
+               <input
+                 type="file"
+                 onChange={(e) => {
+                   const file = e.target.files?.[0];
+                   if (file) {
+                     // Handle the image file here
+                     console.log('Selected file:', file);
+                   }
+                 }}
+                 accept="image/*"
+                 className="w-full p-2 border border-gray-300 rounded mb-4"
+               />
+               <button type="submit" className="w-full p-2 bg-blue-500 text-white rounded">
+                 Upload
+               </button>
+             </form>
+           </div>
           )}
         </div>
         <div className="my-8 border-t border-[#1e293b]"></div>
