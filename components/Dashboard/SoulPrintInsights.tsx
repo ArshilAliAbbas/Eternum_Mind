@@ -1,5 +1,4 @@
 "use client";
-/* eslint-disable react/jsx-newline */
 
 import React from 'react';
 import { motion } from 'framer-motion';
