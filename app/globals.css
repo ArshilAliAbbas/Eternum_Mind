@@ -8,16 +8,141 @@
   100% { opacity: 0.2; }
 }
 
-:root {
+/* Light mode theme variables */
+:root,
+.light {
   --background: #ffffff;
   --foreground: #171717;
+  --card: 0 0% 100%;
+  --card-foreground: 240 10% 3.9%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 240 10% 3.9%;
+  --primary: 240 5.9% 10%;
+  --primary-foreground: 0 0% 98%;
+  --secondary: 240 4.8% 95.9%;
+  --secondary-foreground: 240 5.9% 10%;
+  --muted: 240 4.8% 95.9%;
+  --muted-foreground: 240 3.8% 46.1%;
+  --accent: 240 4.8% 95.9%;
+  --accent-foreground: 240 5.9% 10%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 240 5.9% 90%;
+  --input: 240 5.9% 90%;
+  --ring: 240 5.9% 10%;
+  --radius: 0.5rem;
+  
+  /* Card and container backgrounds */
+  --card-bg: #ffffff;
+  --container-bg: rgba(255, 255, 255, 0.8);
+  --sidebar-bg: #f8f9fa;
+  --hover-bg: rgba(0, 0, 0, 0.05);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Dark mode theme variables */
+.dark {
+  --background: #050a18;
+  --foreground: #ededed;
+  --card: 240 10% 3.9%;
+  --card-foreground: 0 0% 98%;
+  --popover: 240 10% 3.9%;
+  --popover-foreground: 0 0% 98%;
+  --primary: 0 0% 98%;
+  --primary-foreground: 240 5.9% 10%;
+  --secondary: 240 3.7% 15.9%;
+  --secondary-foreground: 0 0% 98%;
+  --muted: 240 3.7% 15.9%;
+  --muted-foreground: 240 5% 64.9%;
+  --accent: 240 3.7% 15.9%;
+  --accent-foreground: 0 0% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 240 3.7% 15.9%;
+  --input: 240 3.7% 15.9%;
+  --ring: 240 4.9% 83.9%;
+  
+  /* Card and container backgrounds */
+  --card-bg: #0d1530;
+  --container-bg: rgba(13, 21, 48, 0.8);
+  --sidebar-bg: #0a1025;
+  --hover-bg: rgba(255, 255, 255, 0.05);
+}
+
+/* Theme color variables - these will be overridden by inline styles from ThemeContext */
+:root {
+  --theme-primary: 270 70% 60%;
+  --theme-secondary: 260 70% 50%;
+  --theme-accent: 280 70% 60%;
+  --theme-primary-rgb: 147, 51, 234;
+  --theme-secondary-rgb: 124, 58, 237;
+  --theme-accent-rgb: 167, 139, 250;
+  
+  /* HSL format for compatibility */
+  --theme-primary: 270 70% 60%;
+  --theme-secondary: 260 70% 50%;
+  --theme-accent: 280 70% 60%;
+  
+  /* App colors - Dark mode defaults */
+  --background: #050a18;
+  --foreground: #ededed;
+  --card-bg: #0d1530;
+  --container-bg: rgba(13, 21, 48, 0.8);
+  --sidebar-bg: #0a1025;
+  --hover-bg: rgba(255, 255, 255, 0.05);
+}
+
+:root[data-theme="purple"] {
+  --theme-primary: 270 70% 60%;
+  --theme-secondary: 260 70% 50%;
+  --theme-accent: 280 70% 60%;
+  --theme-primary-rgb: 147, 51, 234;
+  --theme-secondary-rgb: 124, 58, 237;
+  --theme-accent-rgb: 167, 139, 250;
+}
+
+:root[data-theme="blue"] {
+  --theme-primary: 220 70% 50%;
+  --theme-secondary: 210 70% 60%;
+  --theme-accent: 200 70% 50%;
+  --theme-primary-rgb: 59, 130, 246;
+  --theme-secondary-rgb: 96, 165, 250;
+  --theme-accent-rgb: 56, 189, 248;
+}
+
+:root[data-theme="green"] {
+  --theme-primary: 150 70% 40%;
+  --theme-secondary: 160 70% 50%;
+  --theme-accent: 140 70% 45%;
+  --theme-primary-rgb: 16, 185, 129;
+  --theme-secondary-rgb: 5, 150, 105;
+  --theme-accent-rgb: 52, 211, 153;
+}
+
+:root[data-theme="violet"] {
+  --theme-primary: 260 70% 55%;
+  --theme-secondary: 250 70% 60%;
+  --theme-accent: 270 70% 65%;
+  --theme-primary-rgb: 139, 92, 246;
+  --theme-secondary-rgb: 124, 58, 237;
+  --theme-accent-rgb: 167, 139, 250;
+}
+
+:root[data-theme="azure"] {
+  --theme-primary: 210 70% 60%;
+  --theme-secondary: 200 70% 55%;
+  --theme-accent: 190 70% 65%;
+  --theme-primary-rgb: 96, 165, 250;
+  --theme-secondary-rgb: 56, 189, 248;
+  --theme-accent-rgb: 34, 211, 238;
+}
+
+:root[data-theme="pink"] {
+  --theme-primary: 330 70% 60%;
+  --theme-secondary: 340 70% 55%;
+  --theme-accent: 320 70% 65%;
+  --theme-primary-rgb: 236, 72, 153;
+  --theme-secondary-rgb: 244, 114, 182;
+  --theme-accent-rgb: 217, 70, 239;
 }
 
 body {
@@ -25,6 +150,61 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
   overflow-x: hidden; /* Prevent horizontal scrolling */
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Dark mode specific styles */
+body.dark-mode {
+  color: var(--foreground);
+  background-color: var(--background);
+}
+
+/* Light mode specific styles */
+body.light-mode {
+  color: var(--foreground);
+  background-color: var(--background);
+}
+
+/* Apply theme colors utility classes */
+.theme-text-primary {
+  color: rgb(var(--theme-primary-rgb));
+}
+
+.theme-text-secondary {
+  color: rgb(var(--theme-secondary-rgb));
+}
+
+.theme-text-accent {
+  color: rgb(var(--theme-accent-rgb));
+}
+
+.theme-border {
+  border-color: rgba(var(--theme-primary-rgb), 0.5);
+}
+
+.theme-bg-primary {
+  background-color: rgb(var(--theme-primary-rgb));
+}
+
+.theme-bg-secondary {
+  background-color: rgb(var(--theme-secondary-rgb));
+}
+
+.theme-bg-accent {
+  background-color: rgb(var(--theme-accent-rgb));
+}
+
+/* Theme colors with opacity */
+.theme-bg-primary-10 {
+  background-color: rgba(var(--theme-primary-rgb), 0.1);
+}
+
+.theme-bg-primary-20 {
+  background-color: rgba(var(--theme-primary-rgb), 0.2);
+}
+
+.theme-bg-primary-50 {
+  background-color: rgba(var(--theme-primary-rgb), 0.5);
 }
 
 /* Sidebar transition handling */
@@ -42,4 +222,73 @@ body.sidebar-expanded main {
 .hover-float:hover {
   transform: translateY(-15px);
   box-shadow: 0 20px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* Theme utility classes */
+.theme-card {
+  background-color: var(--card-bg);
+  border: 1px solid rgba(var(--theme-primary-rgb), 0.2);
+  border-radius: 0.5rem;
+}
+
+.theme-container {
+  background-color: var(--container-bg);
+  backdrop-filter: blur(8px);
+}
+
+.theme-border {
+  border-color: rgba(var(--theme-primary-rgb), 0.3);
+}
+
+.theme-text-primary {
+  color: rgb(var(--theme-primary-rgb));
+}
+
+.theme-text-secondary {
+  color: rgb(var(--theme-secondary-rgb));
+}
+
+.theme-text-accent {
+  color: rgb(var(--theme-accent-rgb));
+}
+
+.theme-bg-primary {
+  background-color: rgb(var(--theme-primary-rgb));
+}
+
+.theme-bg-secondary {
+  background-color: rgb(var(--theme-secondary-rgb));
+}
+
+.theme-bg-accent {
+  background-color: rgb(var(--theme-accent-rgb));
+}
+
+.theme-gradient-primary {
+  background-image: linear-gradient(to right, rgb(var(--theme-primary-rgb)), rgb(var(--theme-secondary-rgb)));
+}
+
+.theme-ring {
+  --tw-ring-color: rgba(var(--theme-primary-rgb), 0.5);
+}
+
+/* Additional theme utility classes for transparency */
+.theme-bg-primary-10 {
+  background-color: rgba(var(--theme-primary-rgb), 0.1);
+}
+
+.theme-bg-primary-20 {
+  background-color: rgba(var(--theme-primary-rgb), 0.2);
+}
+
+.theme-bg-primary-50 {
+  background-color: rgba(var(--theme-primary-rgb), 0.5);
+}
+
+.theme-border-primary {
+  border-color: rgb(var(--theme-primary-rgb));
+}
+
+.theme-border-primary-50 {
+  border-color: rgba(var(--theme-primary-rgb), 0.5);
 }

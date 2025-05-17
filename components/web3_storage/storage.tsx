@@ -2,7 +2,7 @@
 // import React, { useState } from 'react';
 // import { create } from '@web3-storage/w3up-client';
 // =======
-/* eslint-disable no-unused-vars */
+// Web3 storage implementation will be added later
 // "use client";
 // import  { useState } from 'react';
 // import { create } from '@web3-storage/w3up-client';
