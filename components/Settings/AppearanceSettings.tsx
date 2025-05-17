@@ -42,10 +42,12 @@ const AppearanceSettings: React.FC = () => {
             <button onClick={() => {
                 setThemeMode('light');
                 // Force immediate UI update
-                document.documentElement.classList.add('light');
-                document.documentElement.classList.remove('dark');
-                document.body.classList.add('light-mode');
-                document.body.classList.remove('dark-mode');
+                if (typeof document !== 'undefined') {
+                  document.documentElement.classList.add('light');
+                  document.documentElement.classList.remove('dark');
+                  document.body.classList.add('light-mode');
+                  document.body.classList.remove('dark-mode');
+                }
               }} className={`flex flex-col items-center justify-center gap-2 rounded-lg border p-3 transition-all ${themeMode === 'light' ? `theme-border theme-bg-primary-10 text-white` : 'border-[#1a2747]/30 bg-[#111c3d]/30 text-gray-400 hover:border-[#1a2747]/50 hover:text-gray-300'}`}>
               <Sun size={24} className={themeMode === 'light' ? 'text-yellow-400' : 'text-gray-500'} />
               <span className="text-sm font-medium">Light</span>
@@ -53,17 +55,19 @@ const AppearanceSettings: React.FC = () => {
             <button onClick={() => {
                 setThemeMode('system');
                 // Force immediate UI update based on system preference
-                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                if (prefersDark) {
-                  document.documentElement.classList.add('dark');
-                  document.documentElement.classList.remove('light');
-                  document.body.classList.add('dark-mode');
-                  document.body.classList.remove('light-mode');
-                } else {
-                  document.documentElement.classList.add('light');
-                  document.documentElement.classList.remove('dark');
-                  document.body.classList.add('light-mode');
-                  document.body.classList.remove('dark-mode');
+                if (typeof window !== 'undefined' && typeof document !== 'undefined') {
+                  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                  if (prefersDark) {
+                    document.documentElement.classList.add('dark');
+                    document.documentElement.classList.remove('light');
+                    document.body.classList.add('dark-mode');
+                    document.body.classList.remove('light-mode');
+                  } else {
+                    document.documentElement.classList.add('light');
+                    document.documentElement.classList.remove('dark');
+                    document.body.classList.add('light-mode');
+                    document.body.classList.remove('dark-mode');
+                  }
                 }
               }} className={`flex flex-col items-center justify-center gap-2 rounded-lg border p-3 transition-all ${themeMode === 'system' ? `theme-border theme-bg-primary-10 text-white` : 'border-[#1a2747]/30 bg-[#111c3d]/30 text-gray-400 hover:border-[#1a2747]/50 hover:text-gray-300'}`}>
               <Monitor size={24} className={themeMode === 'system' ? 'theme-text-secondary' : 'text-gray-500'} />
@@ -72,10 +76,12 @@ const AppearanceSettings: React.FC = () => {
             <button onClick={() => {
                 setThemeMode('dark');
                 // Force immediate UI update
-                document.documentElement.classList.add('dark');
-                document.documentElement.classList.remove('light');
-                document.body.classList.add('dark-mode');
-                document.body.classList.remove('light-mode');
+                if (typeof document !== 'undefined') {
+                  document.documentElement.classList.add('dark');
+                  document.documentElement.classList.remove('light');
+                  document.body.classList.add('dark-mode');
+                  document.body.classList.remove('light-mode');
+                }
               }} className={`flex flex-col items-center justify-center gap-2 rounded-lg border p-3 transition-all ${themeMode === 'dark' ? `theme-border theme-bg-primary-10 text-white` : 'border-[#1a2747]/30 bg-[#111c3d]/30 text-gray-400 hover:border-[#1a2747]/50 hover:text-gray-300'}`}>
               <Moon size={24} className={themeMode === 'dark' ? 'theme-text-accent' : 'text-gray-500'} />
               <span className="text-sm font-medium">Dark</span>

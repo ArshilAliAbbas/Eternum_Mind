@@ -96,7 +96,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   // Function to apply theme colors to CSS variables
   const applyThemeColors = (theme: ColorTheme, isDark: boolean) => {
-    if (typeof window === 'undefined' || !document) return;
+    if (typeof window === 'undefined' || typeof document === 'undefined') return;
     
     const root = document.documentElement;
     
