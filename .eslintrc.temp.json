@@ -1,0 +1,27 @@
+{
+  "extends": [
+    "next/core-web-vitals",
+    "prettier",
+    "plugin:tailwindcss/recommended"
+  ],
+  "plugins": ["react", "unused-imports"],
+  "rules": {
+    "newline-before-return": "off",
+    "tailwindcss/no-custom-classname": "off",
+    "padded-blocks": "off",
+    "no-multiple-empty-lines": "off",
+    "react/jsx-indent": "off",
+    "react/jsx-no-useless-fragment": "off",
+    "react/jsx-newline": "off",
+    "unused-imports/no-unused-imports": "off",
+    "no-unused-vars": "off",
+    "import/order": "off",
+    "import/no-duplicates": "off",
+    "import/newline-after-import": "off",
+    "import/no-useless-path-segments": "off",
+    "import/no-unresolved": "off",
+    "import/first": "off",
+    "import/no-named-as-default": "off",
+    "import/no-cycle": "off"
+  }
+}
