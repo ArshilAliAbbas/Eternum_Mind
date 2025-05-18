@@ -12,7 +12,8 @@ import {
   ArrowRight, 
   Activity, 
   Lightbulb, 
-  Layers 
+  Layers,
+  MessageSquare
 } from 'lucide-react';
 
 // Internal imports
@@ -23,6 +24,7 @@ import MoodCheckIn from './MoodCheckIn';
 import ReflectionPrompt from './ReflectionPrompt';
 import SoulPrintInsights from './SoulPrintInsights';
 import Journey from './Journey';
+import Agent from './Agent';
 
 const Dashboard: React.FC = () => {
   // Using theme context to ensure theme is properly applied throughout the component
@@ -201,6 +203,24 @@ const Dashboard: React.FC = () => {
                 </div>
                 <div className="p-6">
                   <Journey />
+                </div>
+              </motion.div>
+              
+              {/* AI Agent Chat */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.65 }}
+                className="theme-border theme-container overflow-hidden rounded-xl"
+              >
+                <div className="border-b border-[#1a2747]/50 px-6 py-4">
+                  <h2 className="flex items-center gap-2 text-lg font-semibold">
+                    <MessageSquare size={18} className="theme-text-primary" />
+                    <span>Agent</span>
+                  </h2>
+                </div>
+                <div className="p-6">
+                  <Agent />
                 </div>
               </motion.div>
             </div>

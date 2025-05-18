@@ -13,7 +13,8 @@ import {
   Zap,
   Flame,
   Layers,
-  Shield
+  Shield,
+  MessageSquare
 } from 'lucide-react';
 
 const Sidebar: React.FC = () => {
@@ -45,6 +46,7 @@ const Sidebar: React.FC = () => {
     { href: '/mood-tracker', icon: <Flame size={20} />, label: 'Emotions', color: 'from-amber-500 to-orange-500' },
     { href: '/soulprint', icon: <Sparkles size={20} />, label: 'Essence', color: 'from-pink-500 to-rose-500' },
     { href: '/analytics', icon: <Zap size={20} />, label: 'Insights', color: 'from-yellow-400 to-amber-500' },
+    { href: '/agent', icon: <MessageSquare size={20} />, label: 'Agent', color: 'from-blue-500 to-indigo-500' },
     { href: '/profile', icon: <User size={20} />, label: 'Identity', color: 'from-indigo-500 to-purple-500' },
   ];
   
