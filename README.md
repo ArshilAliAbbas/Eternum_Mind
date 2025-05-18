@@ -1,1 +1,1 @@
-<h1>I would love if someone could turn this college into REALITY, we got shut down by the Hackathon team Judges saying it would not workout. This is the front-end code with AI init. Pull this and finish it one day!!</h1>
+<h1>I would love if someone could turn this project into REALITY, we got shut down by the Hackathon team Judges saying it would not workout. This is the front-end code with AI init. Pull this and finish it one day!!</h1>
