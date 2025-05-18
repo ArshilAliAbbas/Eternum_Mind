@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 import {
   Calendar,
   Save,
@@ -25,9 +26,9 @@ import {
   Eye,
   EyeOff,
 } from "lucide-react";
-// @ts-ignore
+// @ts-expect-error - Ignoring missing type declarations for crypto-js
 import CryptoJS from 'crypto-js';
-// @ts-ignore - Ignoring missing type declarations for crypto-js
+
 import { storeDataOnWeb3, retrieveDataFromWeb3 } from "../../lib/web3services";
 
 const JournalEntry: React.FC = () => {
@@ -126,7 +127,10 @@ const JournalEntry: React.FC = () => {
 
   // Encrypt data with the provided key
   const encryptData = (data: string, key: string): string => {
-    if (!key) return data; // Don't encrypt if no key
+    if (!key) {
+      return data; // Don't encrypt if no key
+    }
+    
     return CryptoJS.AES.encrypt(data, key).toString();
   };
 
@@ -135,9 +139,11 @@ const JournalEntry: React.FC = () => {
     if (!key) return encryptedData; // Don't decrypt if no key
     try {
       const bytes = CryptoJS.AES.decrypt(encryptedData, key);
+      
       return bytes.toString(CryptoJS.enc.Utf8);
     } catch (error) {
       console.error("Decryption failed:", error);
+      
       return ""; // Return empty string if decryption fails
     }
   };
@@ -170,6 +176,7 @@ const JournalEntry: React.FC = () => {
     if (!encryptionKey) {
       setSaveMessage("Please enter an encryption key");
       setTimeout(() => setSaveMessage(""), 3000);
+      
       return;
     }
 
@@ -218,6 +225,7 @@ const JournalEntry: React.FC = () => {
     if (shouldEncrypt && !isWeb3Connected) {
       setSaveMessage("Please connect your wallet first to save encrypted data to Web3");
       setTimeout(() => setSaveMessage(""), 3000);
+      
       return;
     }
     
@@ -279,12 +287,14 @@ const JournalEntry: React.FC = () => {
     if (!isWeb3Connected) {
       setSaveMessage("Please connect your wallet first");
       setTimeout(() => setSaveMessage(""), 3000);
+      
       return;
     }
     
     if (!encryptionKey) {
       setSaveMessage("Please enter your encryption key to decrypt data");
       setTimeout(() => setSaveMessage(""), 3000);
+      
       return;
     }
     
@@ -516,7 +526,7 @@ const JournalEntry: React.FC = () => {
           <div className="absolute bottom-0 left-0 h-4 w-px bg-gradient-to-t from-yellow-500/50 to-transparent"></div>
           <div className="absolute bottom-0 left-0 h-px w-4 bg-gradient-to-r from-yellow-500/50 to-transparent"></div>
           <div className="absolute bottom-0 right-0 h-4 w-px bg-gradient-to-t from-yellow-500/50 to-transparent"></div>
-          <div className="absolute bottom-0 right-0 h-4 w-4 bg-gradient-to-r from-transparent to-yellow-500/50"></div>
+          <div className="absolute bottom-0 right-0 size-4 bg-gradient-to-r from-transparent to-yellow-500/50"></div>
           <textarea
             value={content}
             onChange={handleContentChange}
@@ -558,10 +568,12 @@ const JournalEntry: React.FC = () => {
                   key={index}
                   className="relative size-20 overflow-hidden rounded-md border border-[#1e293b]"
                 >
-                  <img
+                  <Image
                     src={image}
                     alt="Journal image"
                     className="size-full object-cover"
+                    width={80}
+                    height={80}
                   />
                   <button
                     onClick={() => removeImage(index)}

@@ -1,4 +1,4 @@
-import { ethers } from 'ethers';
+import { BrowserProvider, Contract } from 'ethers';
 
 // Simple ABI for a basic storage contract
 const storageABI = [
@@ -19,8 +19,8 @@ export const connectWallet = async () => {
     // Request account access
     await window.ethereum.request({ method: 'eth_requestAccounts' });
     
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const signer = provider.getSigner();
+    const provider = new BrowserProvider(window.ethereum);
+    const signer = await provider.getSigner();
     const address = await signer.getAddress();
     
     return { provider, signer, address };
@@ -34,11 +34,8 @@ export const storeDataOnWeb3 = async (data: string) => {
   try {
     const { signer } = await connectWallet();
     
-    const contract = new ethers.Contract(
-      CONTRACT_ADDRESS,
-      storageABI,
-      signer
-    );
+    // Ensure signer is resolved before creating the contract
+    const contract = new Contract(CONTRACT_ADDRESS, storageABI, signer);
     
     // Store the data on the blockchain
     const tx = await contract.store(data);
@@ -57,7 +54,7 @@ export const retrieveDataFromWeb3 = async () => {
   try {
     const { provider } = await connectWallet();
     
-    const contract = new ethers.Contract(
+    const contract = new Contract(
       CONTRACT_ADDRESS,
       storageABI,
       provider
@@ -78,9 +75,9 @@ declare global {
   interface Window {
     ethereum?: {
       isMetaMask?: boolean;
-      request: (args: { method: string; params?: any[] }) => Promise<any>;
-      on: (event: string, callback: (...args: any[]) => void) => void;
-      removeListener: (event: string, callback: (...args: any[]) => void) => void;
+      request: (_args: { method: string; params?: any[] }) => Promise<any>;
+      on: (_event: string, _callback: (..._args: any[]) => void) => void;
+      removeListener: (_event: string, _callback: (..._args: any[]) => void) => void;
       selectedAddress: string | null;
     };
   }
