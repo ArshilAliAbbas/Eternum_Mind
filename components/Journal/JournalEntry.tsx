@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useState, useEffect, useRef } from "react";
 import {
   Calendar,
@@ -20,11 +18,17 @@ import {
   HelpCircle,
   Tag,
   Plus,
-  Image as ImageIcon,
+  ImageIcon,
   X,
   PenLine,
+  Key,
+  Eye,
+  EyeOff,
 } from "lucide-react";
-import Image from "next/image";
+// @ts-ignore
+import CryptoJS from 'crypto-js';
+// @ts-ignore - Ignoring missing type declarations for crypto-js
+import { storeDataOnWeb3, retrieveDataFromWeb3 } from "../../lib/web3services";
 
 const JournalEntry: React.FC = () => {
   const [title, setTitle] = useState("");
@@ -38,20 +42,38 @@ const JournalEntry: React.FC = () => {
   const [showPlaceholder, setShowPlaceholder] = useState(true);
   const [images, setImages] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [encryptionKey, setEncryptionKey] = useState("");
+  const [showEncryptionKey, setShowEncryptionKey] = useState(false);
+  const [isEncrypted, setIsEncrypted] = useState(false);
+  const [isWeb3Connected, setIsWeb3Connected] = useState(false);
+  const [walletAddress, setWalletAddress] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   // Load saved entry from localStorage if it exists
   useEffect(() => {
     const savedEntry = localStorage.getItem("journalEntry");
     if (savedEntry) {
-      const parsedEntry = JSON.parse(savedEntry);
-      setTitle(parsedEntry.title || "");
-      setContent(parsedEntry.content || "");
-      setSelectedMood(parsedEntry.mood || null);
-      setTags(parsedEntry.tags || []);
-      setImages(parsedEntry.images || []);
-      setWordCount(
-        parsedEntry.content ? parsedEntry.content.trim().split(/\s+/).length : 0
-      );
+      try {
+        const parsedEntry = JSON.parse(savedEntry);
+        
+        // Check if the entry is encrypted
+        if (parsedEntry.isEncrypted) {
+          setIsEncrypted(true);
+          // Don't auto-decrypt, wait for user to enter key
+        } else {
+          // Load unencrypted entry
+          setTitle(parsedEntry.title || "");
+          setContent(parsedEntry.content || "");
+          setSelectedMood(parsedEntry.mood || null);
+          setTags(parsedEntry.tags || []);
+          setImages(parsedEntry.images || []);
+          setWordCount(
+            parsedEntry.content ? parsedEntry.content.trim().split(/\s+/).length : 0
+          );
+        }
+      } catch (error) {
+        console.error("Error parsing saved entry:", error);
+      }
     }
   }, []);
 
@@ -85,7 +107,7 @@ const JournalEntry: React.FC = () => {
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      const newImages = Array.from(e.target.files).map(file => {
+      const newImages = Array.from(e.target.files).map((file) => {
         return URL.createObjectURL(file);
       });
       setImages([...images, ...newImages]);
@@ -102,30 +124,209 @@ const JournalEntry: React.FC = () => {
     setImages(images.filter((_, index) => index !== indexToRemove));
   };
 
-  const saveEntry = () => {
+  // Encrypt data with the provided key
+  const encryptData = (data: string, key: string): string => {
+    if (!key) return data; // Don't encrypt if no key
+    return CryptoJS.AES.encrypt(data, key).toString();
+  };
+
+  // Decrypt data with the provided key
+  const decryptData = (encryptedData: string, key: string): string => {
+    if (!key) return encryptedData; // Don't decrypt if no key
+    try {
+      const bytes = CryptoJS.AES.decrypt(encryptedData, key);
+      return bytes.toString(CryptoJS.enc.Utf8);
+    } catch (error) {
+      console.error("Decryption failed:", error);
+      return ""; // Return empty string if decryption fails
+    }
+  };
+
+  // Connect to Web3 wallet
+  const connectToWeb3 = async () => {
+    if (typeof window.ethereum !== 'undefined') {
+      try {
+        setIsLoading(true);
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        setWalletAddress(accounts[0]);
+        setIsWeb3Connected(true);
+        setSaveMessage("Wallet connected successfully!");
+        setTimeout(() => setSaveMessage(""), 3000);
+      } catch (error) {
+        console.error("Failed to connect wallet:", error);
+        setSaveMessage("Failed to connect wallet. Please try again.");
+        setTimeout(() => setSaveMessage(""), 3000);
+      } finally {
+        setIsLoading(false);
+      }
+    } else {
+      setSaveMessage("Please install MetaMask or another Ethereum wallet");
+      setTimeout(() => setSaveMessage(""), 3000);
+    }
+  };
+
+  // Attempt to decrypt the saved entry with the provided key
+  const decryptEntry = () => {
+    if (!encryptionKey) {
+      setSaveMessage("Please enter an encryption key");
+      setTimeout(() => setSaveMessage(""), 3000);
+      return;
+    }
+
+    try {
+      const savedEntry = localStorage.getItem("journalEntry");
+      if (savedEntry) {
+        const parsedEntry = JSON.parse(savedEntry);
+        
+        if (parsedEntry.isEncrypted) {
+          // Decrypt the content
+          const decryptedTitle = decryptData(parsedEntry.title || "", encryptionKey);
+          const decryptedContent = decryptData(parsedEntry.content || "", encryptionKey);
+          
+          // If decryption was successful (content is not empty)
+          if (decryptedContent) {
+            setTitle(decryptedTitle);
+            setContent(decryptedContent);
+            setSelectedMood(parsedEntry.mood || null);
+            setTags(parsedEntry.tags || []);
+            setImages(parsedEntry.images || []);
+            setWordCount(
+              decryptedContent.trim() === "" ? 0 : decryptedContent.trim().split(/\s+/).length
+            );
+            setIsEncrypted(false);
+            setSaveMessage("Journal entry decrypted successfully!");
+          } else {
+            setSaveMessage("Incorrect encryption key");
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Error decrypting entry:", error);
+      setSaveMessage("Decryption failed. Incorrect key?");
+    }
+    
+    setTimeout(() => setSaveMessage(""), 3000);
+  };
+
+  // Save encrypted data to Web3
+  const saveEntry = async () => {
     const now = new Date();
+    
+    // Determine if we should encrypt this save
+    const shouldEncrypt = encryptionKey.length > 0;
+
+    if (shouldEncrypt && !isWeb3Connected) {
+      setSaveMessage("Please connect your wallet first to save encrypted data to Web3");
+      setTimeout(() => setSaveMessage(""), 3000);
+      return;
+    }
+    
     const entry = {
-      title,
-      content,
+      title: shouldEncrypt ? encryptData(title, encryptionKey) : title,
+      content: shouldEncrypt ? encryptData(content, encryptionKey) : content,
       mood: selectedMood,
       tags,
       images,
       date: now.toISOString(),
       wordCount,
+      isEncrypted: shouldEncrypt,
+      walletAddress: walletAddress || null
     };
 
-    localStorage.setItem("journalEntry", JSON.stringify(entry));
-    const timeString = now.toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-    setLastSaved(timeString);
-    setSaveMessage("Journal entry saved successfully!");
+    try {
+      setIsLoading(true);
+      
+      // Always store a copy in localStorage for convenience
+      localStorage.setItem("journalEntry", JSON.stringify(entry));
+      
+      // If connected to Web3 and the entry is encrypted, also store it on Web3
+      if (isWeb3Connected && shouldEncrypt) {
+        // Convert the entry to a string for storage on Web3
+        const entryString = JSON.stringify(entry);
+        
+        // Store the encrypted entry on Web3
+        const txHash = await storeDataOnWeb3(entryString);
+        
+        setSaveMessage(`Journal entry encrypted and saved to Web3! Transaction: ${txHash.substring(0, 10)}...`);
+        setIsEncrypted(true);
+      } else if (shouldEncrypt) {
+        setSaveMessage("Journal entry encrypted and saved locally!");
+        setIsEncrypted(true);
+      } else {
+        setSaveMessage("Journal entry saved successfully to localStorage!");
+      }
+      
+      const timeString = now.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+      setLastSaved(timeString);
+    } catch (error) {
+      console.error("Error saving entry:", error);
+      setSaveMessage("Failed to save entry. Please try again.");
+    } finally {
+      setIsLoading(false);
+      
+      // Clear the success message after 5 seconds
+      setTimeout(() => {
+        setSaveMessage("");
+      }, 5000);
+    }
+  };
 
-    // Clear the success message after 3 seconds
-    setTimeout(() => {
-      setSaveMessage("");
-    }, 3000);
+  // Fetch data from Web3
+  const retrieveFromWeb3 = async () => {
+    if (!isWeb3Connected) {
+      setSaveMessage("Please connect your wallet first");
+      setTimeout(() => setSaveMessage(""), 3000);
+      return;
+    }
+    
+    if (!encryptionKey) {
+      setSaveMessage("Please enter your encryption key to decrypt data");
+      setTimeout(() => setSaveMessage(""), 3000);
+      return;
+    }
+    
+    try {
+      setIsLoading(true);
+      setSaveMessage("Retrieving your data from Web3...");
+      
+      const data = await retrieveDataFromWeb3();
+      
+      if (data) {
+        const parsedEntry = JSON.parse(data);
+        
+        // Decrypt the data
+        const decryptedTitle = decryptData(parsedEntry.title || "", encryptionKey);
+        const decryptedContent = decryptData(parsedEntry.content || "", encryptionKey);
+        
+        if (decryptedContent) {
+          setTitle(decryptedTitle);
+          setContent(decryptedContent);
+          setSelectedMood(parsedEntry.mood || null);
+          setTags(parsedEntry.tags || []);
+          setImages(parsedEntry.images || []);
+          setWordCount(
+            decryptedContent.trim() === "" ? 0 : decryptedContent.trim().split(/\s+/).length
+          );
+          setSaveMessage("Journal entry retrieved and decrypted from Web3!");
+        } else {
+          setSaveMessage("Failed to decrypt data. Incorrect key?");
+        }
+      } else {
+        setSaveMessage("No data found on Web3 for your account");
+      }
+    } catch (error) {
+      console.error("Error retrieving from Web3:", error);
+      setSaveMessage("Failed to retrieve from Web3. Check console for details.");
+    } finally {
+      setIsLoading(false);
+      
+      setTimeout(() => {
+        setSaveMessage("");
+      }, 5000);
+    }
   };
 
   const moods = [
@@ -158,6 +359,17 @@ const JournalEntry: React.FC = () => {
           <div className="flex items-center gap-3">
             <div className="size-2 rounded-full bg-yellow-400 shadow-sm shadow-yellow-400/50"></div>
             <h1 className="text-2xl font-bold tracking-wide">Journal Entry</h1>
+            {isEncrypted && (
+              <div className="ml-2 flex items-center gap-1 rounded-full bg-green-600/20 px-3 py-1 text-xs text-green-400">
+                <Lock size={12} />
+                <span>Encrypted</span>
+              </div>
+            )}
+            {isWeb3Connected && (
+              <div className="ml-2 flex items-center gap-1 rounded-full bg-indigo-600/20 px-3 py-1 text-xs text-indigo-400">
+                <span>Web3 Connected</span>
+              </div>
+            )}
           </div>
           <div className="flex items-center gap-3 rounded-full bg-[#1e293b]/50 px-3 py-1">
             <div className="flex items-center gap-1 text-gray-400">
@@ -173,17 +385,51 @@ const JournalEntry: React.FC = () => {
         <div className="mb-6 flex gap-3">
           <button
             onClick={saveEntry}
-            className="group relative flex items-center gap-2 overflow-hidden rounded-full bg-[#1e293b] px-5 py-2 text-sm text-gray-300 transition-all hover:shadow-md"
+            disabled={isLoading}
+            className={`group relative flex items-center gap-2 overflow-hidden rounded-full ${
+              isLoading ? "bg-[#1e293b]/50 text-gray-500" : "bg-[#1e293b] text-gray-300 hover:shadow-md"
+            } px-5 py-2 text-sm transition-all`}
           >
             <span className="absolute inset-0 bg-gradient-to-r from-yellow-600/20 to-amber-600/20 opacity-0 transition-opacity group-hover:opacity-100"></span>
             <Save size={16} className="relative z-10" />
-            <span className="relative z-10">Save</span>
+            <span className="relative z-10">{isLoading ? "Saving..." : "Save"}</span>
           </button>
-          <button className="group relative flex items-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-2 text-sm transition-all hover:shadow-md hover:shadow-indigo-500/20">
+          <button
+            onClick={connectToWeb3}
+            disabled={isLoading || isWeb3Connected}
+            className={`group relative flex items-center gap-2 overflow-hidden rounded-full ${
+              isWeb3Connected
+                ? "bg-indigo-600/30 text-indigo-300"
+                : isLoading
+                ? "bg-[#1e293b]/50 text-gray-500"
+                : "bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:shadow-md hover:shadow-indigo-500/20"
+            } px-5 py-2 text-sm transition-all`}
+          >
             <span className="absolute inset-0 bg-gradient-to-r from-blue-700 to-indigo-700 opacity-0 transition-opacity group-hover:opacity-100"></span>
-            <Sparkles size={16} className="relative z-10" />
-            <span className="relative z-10">AI Insights</span>
+            <Key size={16} className="relative z-10" />
+            <span className="relative z-10">
+              {isWeb3Connected
+                ? "Wallet Connected"
+                : isLoading
+                ? "Connecting..."
+                : "Connect Web3 Wallet"}
+            </span>
           </button>
+          {isWeb3Connected && (
+            <button
+              onClick={retrieveFromWeb3}
+              disabled={isLoading}
+              className={`group relative flex items-center gap-2 overflow-hidden rounded-full ${
+                isLoading
+                  ? "bg-[#1e293b]/50 text-gray-500"
+                  : "bg-[#1e293b] text-gray-300 hover:shadow-md"
+              } px-5 py-2 text-sm transition-all`}
+            >
+              <span className="absolute inset-0 bg-gradient-to-r from-indigo-600/20 to-blue-600/20 opacity-0 transition-opacity group-hover:opacity-100"></span>
+              <RefreshCcw size={16} className="relative z-10" />
+              <span className="relative z-10">{isLoading ? "Loading..." : "Retrieve from Web3"}</span>
+            </button>
+          )}
           {saveMessage && (
             <div className="flex items-center rounded-full bg-green-600/20 px-5 py-2 text-sm text-green-400">
               {saveMessage}
@@ -195,6 +441,57 @@ const JournalEntry: React.FC = () => {
             </div>
           )}
         </div>
+        
+        {/* Encryption Key Input */}
+        <div className="mb-4 flex gap-2">
+          <div className="relative flex-1">
+            <div className="absolute -left-2 top-1/2 h-px w-2 -translate-y-1/2 bg-indigo-500/50"></div>
+            <div className="flex rounded-md border border-[#1e293b] bg-[#0c1222] focus-within:border-indigo-500/50 focus-within:ring-1 focus-within:ring-indigo-500/30">
+              <div className="flex items-center pl-3 text-indigo-400">
+                <Key size={16} />
+              </div>
+              <input
+                type={showEncryptionKey ? "text" : "password"}
+                value={encryptionKey}
+                onChange={(e) => setEncryptionKey(e.target.value)}
+                placeholder="Enter encryption key"
+                className="w-full border-0 bg-transparent p-3 text-sm transition-all placeholder:text-gray-500 focus:outline-none"
+              />
+              <button
+                onClick={() => setShowEncryptionKey(!showEncryptionKey)}
+                className="px-3 text-gray-400 hover:text-gray-300"
+              >
+                {showEncryptionKey ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
+            </div>
+            <div className="absolute -right-2 top-1/2 h-px w-2 -translate-y-1/2 bg-indigo-500/50"></div>
+          </div>
+          {isEncrypted && (
+            <button
+              onClick={decryptEntry}
+              className="flex items-center gap-2 rounded-md bg-indigo-600 px-4 py-2 text-sm hover:bg-indigo-700"
+            >
+              <Lock size={16} />
+              Decrypt
+            </button>
+          )}
+        </div>
+        
+        {/* Web3 Wallet Info */}
+        {isWeb3Connected && (
+          <div className="mb-4 rounded-md border border-indigo-500/20 bg-indigo-500/5 p-2">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="size-2 rounded-full bg-indigo-400 shadow-sm shadow-indigo-400/50"></div>
+                <span className="text-sm text-indigo-300">Connected wallet:</span>
+              </div>
+              <div className="text-sm text-indigo-300">
+                {walletAddress.substring(0, 6)}...{walletAddress.substring(walletAddress.length - 4)}
+              </div>
+            </div>
+          </div>
+        )}
+        
         <div className="relative mb-4">
           <div className="absolute -left-2 top-1/2 h-px w-2 -translate-y-1/2 bg-yellow-500/50"></div>
           <input
@@ -219,7 +516,7 @@ const JournalEntry: React.FC = () => {
           <div className="absolute bottom-0 left-0 h-4 w-px bg-gradient-to-t from-yellow-500/50 to-transparent"></div>
           <div className="absolute bottom-0 left-0 h-px w-4 bg-gradient-to-r from-yellow-500/50 to-transparent"></div>
           <div className="absolute bottom-0 right-0 h-4 w-px bg-gradient-to-t from-yellow-500/50 to-transparent"></div>
-          <div className="absolute bottom-0 right-0 h-px w-4 bg-gradient-to-r from-transparent to-yellow-500/50"></div>
+          <div className="absolute bottom-0 right-0 h-4 w-4 bg-gradient-to-r from-transparent to-yellow-500/50"></div>
           <textarea
             value={content}
             onChange={handleContentChange}
@@ -227,86 +524,59 @@ const JournalEntry: React.FC = () => {
             className="min-h-[300px] w-full bg-transparent p-4 text-lg focus:outline-none"
           />
           {showPlaceholder && (
-          <div className="pointer-events-none absolute left-0 top-0 flex size-full flex-col items-center justify-center p-4 text-gray-500">
-            <PenLine size={40} className="mb-4 opacity-20" />
-            <p className="text-center">Start writing your thoughts...</p>
-            <form className="w-full max-w-md rounded bg-white p-4 shadow-lg">
-              <textarea
-                 value={content}
-                 onChange={handleContentChange}
-                 placeholder="Type your text here..."
-                 className="mb-4 w-full rounded border border-gray-300 p-2"
-               />
-              <input
-                 type="file"
-                 onChange={(e) => {
-                   const file = e.target.files?.[0];
-                   if (file) {
-                     // Handle the image file here
-                     console.log('Selected file:', file);
-                   }
-                 }}
-                 accept="image/*"
-                 className="mb-4 w-full rounded border border-gray-300 p-2"
-               />
-              <button type="submit" className="w-full rounded bg-blue-500 p-2 text-white">
-                Upload
-              </button>
-            </form>
-          </div>
-          )}
-          <div className="relative mb-6 flex-1 rounded-lg border border-[#1e293b] bg-[#0f1729] p-5">
-            <textarea
-              placeholder="What's on your mind today?"
-              value={content}
-              onChange={handleContentChange}
-              className="size-full min-h-[300px] resize-none bg-transparent text-gray-300 placeholder:text-gray-500 focus:outline-none"
-            ></textarea>
-            {showPlaceholder && content === "" && (
-              <div className="pointer-events-none absolute left-0 top-0 p-5 text-gray-500">
-                <p>What's on your mind today?</p>
-                <p className="mt-4 text-sm text-gray-600">
-                  This is your safe space. Write freely about your thoughts,
-                  feelings, and experiences...
-                </p>
-              </div>
-            )}
-            <div className="absolute bottom-4 right-4 flex items-center gap-2">
-              <input 
-                type="file" 
-                ref={fileInputRef} 
-                onChange={handleImageUpload} 
-                className="hidden" 
-                accept="image/*" 
-                multiple 
-              />
-              <button
-                onClick={triggerFileInput}
-                className="flex items-center gap-1 rounded-md bg-[#1e293b] px-3 py-1.5 text-xs text-gray-300 hover:bg-[#283548]"
-              >
-                <ImageIcon size={14} />
-                Add Images
-              </button>
+            <div className="pointer-events-none absolute left-0 top-0 flex size-full flex-col items-center justify-center p-4 text-gray-500">
+              <PenLine size={40} className="mb-4 opacity-20" />
+              <p className="text-center">Start writing your thoughts...</p>
+              {isWeb3Connected && (
+                <p className="mt-2 text-sm text-indigo-400">Your entry will be encrypted and stored on Web3</p>
+              )}
             </div>
-            {images.length > 0 && (
-              <div className="mt-4 flex flex-wrap gap-2">
-                {images.map((image, index) => (
-                  <div key={index} className="relative size-20 overflow-hidden rounded-md border border-[#1e293b]">
-                    <Image src={image} alt="Journal image" width={80} height={80} className="size-full object-cover" unoptimized />
-                    <button 
-                      onClick={() => removeImage(index)}
-                      className="absolute right-1 top-1 flex size-5 items-center justify-center rounded-full bg-black/70 text-white hover:bg-black"
-                    >
-                      <X size={12} />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
+          )}
+          
+          {/* Images section */}
+          <div className="absolute bottom-4 right-4 flex items-center gap-2">
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleImageUpload}
+              className="hidden"
+              accept="image/*"
+              multiple
+            />
+            <button
+              onClick={triggerFileInput}
+              className="flex items-center gap-1 rounded-md bg-[#1e293b] px-3 py-1.5 text-xs text-gray-300 hover:bg-[#283548]"
+            >
+              <ImageIcon size={14} />
+              Add Images
+            </button>
           </div>
+          {images.length > 0 && (
+            <div className="absolute bottom-12 right-4 mt-4 flex flex-wrap gap-2">
+              {images.map((image, index) => (
+                <div
+                  key={index}
+                  className="relative size-20 overflow-hidden rounded-md border border-[#1e293b]"
+                >
+                  <img
+                    src={image}
+                    alt="Journal image"
+                    className="size-full object-cover"
+                  />
+                  <button
+                    onClick={() => removeImage(index)}
+                    className="absolute right-1 top-1 flex size-5 items-center justify-center rounded-full bg-black/70 text-white hover:bg-black"
+                  >
+                    <X size={12} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
-        <div className="my-8 border-t border-[#1e293b]"></div>
-        <div className="mb-6">
+        
+        {/* Rest of the component */}
+        <div className="mb-8 rounded-lg border border-[#1e293b] bg-[#0f1729] p-4">
           <div className="mb-4 flex items-center gap-3">
             <div className="size-1.5 rounded-full bg-yellow-400 shadow-sm shadow-yellow-400/30"></div>
             <h3 className="text-xl font-medium">How are you feeling today?</h3>
@@ -380,16 +650,36 @@ const JournalEntry: React.FC = () => {
             <span>{wordCount} words</span>
           </div>
           <div className="flex gap-3">
-            <button className="flex items-center gap-2 rounded-md bg-[#1e293b] px-4 py-2 text-sm text-gray-300 hover:bg-[#283548]">
-              <Sparkles size={16} />
-              Get AI Insights
+            <button
+              onClick={() => {
+                if (encryptionKey) {
+                  if (!isWeb3Connected) {
+                    connectToWeb3();
+                  } else {
+                    saveEntry();
+                  }
+                } else {
+                  setSaveMessage("Please enter an encryption key first");
+                  setTimeout(() => setSaveMessage(""), 3000);
+                }
+              }}
+              disabled={isLoading}
+              className={`flex items-center gap-2 rounded-md ${
+                isLoading ? "bg-[#1e293b]/50 text-gray-500" : "bg-[#1e293b] text-gray-300 hover:bg-[#283548]"
+              } px-4 py-2 text-sm`}
+            >
+              <Lock size={16} />
+              {isWeb3Connected ? "Encrypt & Save to Web3" : "Encrypt & Connect Web3"}
             </button>
             <button
               onClick={saveEntry}
-              className="flex items-center gap-2 rounded-md bg-[#4f46e5] px-4 py-2 text-sm hover:bg-[#4338ca]"
+              disabled={isLoading}
+              className={`flex items-center gap-2 rounded-md ${
+                isLoading ? "bg-indigo-700/50 text-indigo-300/50" : "bg-[#4f46e5] hover:bg-[#4338ca]"
+              } px-4 py-2 text-sm`}
             >
               <Save size={16} />
-              Save Entry
+              {isLoading ? "Saving..." : "Save Entry"}
             </button>
           </div>
         </div>
@@ -463,13 +753,41 @@ const JournalEntry: React.FC = () => {
             </div>
           </div>
           <div className="mt-6 flex justify-between">
-            <button className="flex items-center gap-2 rounded-md bg-[#1e293b] px-4 py-2 text-sm hover:bg-[#283548]">
+            <button 
+              onClick={() => {
+                if (encryptionKey) {
+                  saveEntry();
+                } else {
+                  setSaveMessage("Please enter an encryption key first");
+                  setTimeout(() => setSaveMessage(""), 3000);
+                }
+              }}
+              disabled={isLoading}
+              className={`flex items-center gap-2 rounded-md ${
+                isLoading ? "bg-[#1e293b]/50 text-gray-500" : "bg-[#1e293b] text-gray-300 hover:bg-[#283548]"
+              } px-4 py-2 text-sm`}
+            >
               <Lock size={16} />
               Encrypt
             </button>
-            <button className="flex items-center gap-2 rounded-md bg-indigo-600 px-4 py-2 text-sm hover:bg-indigo-700">
+            <button 
+              onClick={() => {
+                if (!isWeb3Connected) {
+                  connectToWeb3();
+                } else if (encryptionKey) {
+                  saveEntry();
+                } else {
+                  setSaveMessage("Please enter an encryption key first");
+                  setTimeout(() => setSaveMessage(""), 3000);
+                }
+              }}
+              disabled={isLoading}
+              className={`flex items-center gap-2 rounded-md ${
+                isLoading ? "bg-indigo-700/50 text-indigo-300/50" : "bg-indigo-600 hover:bg-indigo-700"
+              } px-4 py-2 text-sm`}
+            >
               <Upload size={16} />
-              To Crystal
+              {isWeb3Connected ? "Save to Web3" : "Connect Web3"}
             </button>
           </div>
         </div>
